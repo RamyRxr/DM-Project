@@ -52,19 +52,22 @@
 **Objective:** Fix inconsistencies and missing information using simple, user‑controlled methods.
 
 ### Duplicate Handling
-- [ ] **Detect duplicate rows** → Identify duplicated records.
-- [ ] **Display duplicate count** → Show number of duplicates found.
-- [ ] **Remove duplicates** → Delete duplicates only after user confirmation.
+- [x] **Detect duplicate rows** → Identify duplicated records.
+- [x] **Display duplicate count** → Show number of duplicates found.
+- [x] **Remove duplicates** → Delete duplicates only after user confirmation.
 
 ### Missing Values Handling
-- [ ] **Detect missing values per column** → Count nulls for each attribute.
-- [ ] **Display missing value table** → Summarize missing data visually.
-- [ ] **Drop rows with missing values** → Remove affected rows.
-- [ ] **Drop selected columns** → Allow column‑level deletion.
-- [ ] **Replace missing values with 0** → Apply numeric replacement.
-- [ ] **Replace missing values with mean** → Use column mean.
-- [ ] **Forward fill missing values** → Propagate previous value.
-- [ ] **Backward fill missing values** → Propagate next value.
+- [x] **Detect missing values per column** → Count nulls for each attribute. (Now includes custom indicators and type mismatches with detailed summary and improved UI)
+- [x] **Display missing value table** → Summarize missing data visually. (Now shows standard NaNs and "messing" values with new UI and dynamic updates)
+- [x] **Drop rows with missing values** → Remove affected rows.
+- [x] **Drop selected columns** → Allow column‑level deletion.
+- [x] **Replace missing values with 0** → Apply numeric replacement.
+- [x] **Replace missing values with mean** → Use column mean.
+- [x] **Forward fill missing values** → Propagate previous value.
+- [x] **Backward fill missing values** → Propagate next value.
+- [x] **Replace missing values with median** -> Use column median.
+- [x] **Implement Auto Clean Data button** → Converts all detected non-standard values/type mismatches to NaN.
+- [x] **Implement Apply Custom Indicators to NaN button** → Converts user-defined indicators to NaN.
 
 ---
 
