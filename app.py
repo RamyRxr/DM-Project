@@ -513,9 +513,64 @@ if st.session_state.df is not None:
         if total_outliers > 0:
             st.warning(f"⚠️ Found **{total_outliers}** outlier(s) in the dataset")
             
-            col1, col2 = st.columns(2)
+            # Create tabs for different removal options
+            tab1, tab2, tab3 = st.tabs(["🎯 Select Columns", "🗑️ Remove All", "✅ Keep All"])
             
-            with col1:
+            with tab1:
+                st.markdown("**Select specific columns to remove outliers from:**")
+                
+                # Find columns that have outliers
+                cols_with_outliers = []
+                for col in numeric_cols:
+                    col_data = st.session_state.df[col].dropna()
+                    if len(col_data) > 0:
+                        outlier_mask = detect_outliers_iqr(col_data)
+                        if outlier_mask.sum() > 0:
+                            cols_with_outliers.append(col)
+                
+                if cols_with_outliers:
+                    # Multi-select for columns
+                    selected_cols = st.multiselect(
+                        "Choose columns:",
+                        cols_with_outliers,
+                        default=[],
+                        help="Select one or more columns to remove outliers from"
+                    )
+                    
+                    if selected_cols:
+                        # Show how many rows will be affected
+                        mask = pd.Series([True] * len(st.session_state.df))
+                        total_to_remove = 0
+                        
+                        for col in selected_cols:
+                            col_data = st.session_state.df[col]
+                            outlier_mask = detect_outliers_iqr(col_data.dropna())
+                            
+                            # Create full mask for the column (including NaN positions)
+                            full_mask = pd.Series([False] * len(st.session_state.df))
+                            full_mask.loc[col_data.dropna().index] = outlier_mask.values
+                            
+                            mask = mask & ~full_mask
+                        
+                        rows_to_remove = len(st.session_state.df) - mask.sum()
+                        
+                        st.info(f"📊 This will remove **{rows_to_remove}** row(s) containing outliers in the selected column(s)")
+                        
+                        if st.button("🗑️ Remove Outliers from Selected Columns", type="primary", use_container_width=True):
+                            original_count = len(st.session_state.df)
+                            st.session_state.df = st.session_state.df[mask].reset_index(drop=True)
+                            removed_count = original_count - len(st.session_state.df)
+                            
+                            st.success(f"✅ Removed {removed_count} row(s) containing outliers from {len(selected_cols)} column(s)!")
+                    else:
+                        st.info("👆 Select at least one column to remove outliers")
+                else:
+                    st.info("No columns with outliers found")
+            
+            with tab2:
+                st.markdown("**Remove outliers from ALL numeric columns:**")
+                st.warning(f"⚠️ This will remove rows that contain outliers in ANY numeric column")
+                
                 if st.button("🗑️ Remove All Outliers", type="primary", use_container_width=True):
                     # Remove rows that contain outliers in any numeric column
                     mask = pd.Series([True] * len(st.session_state.df))
@@ -536,9 +591,12 @@ if st.session_state.df is not None:
                     
                     st.success(f"✅ Removed {removed_count} row(s) containing outliers!")
             
-            with col2:
-                if st.button("✅ Keep Outliers", type="secondary", use_container_width=True):
-                    st.info("ℹ️ Outliers will be kept in the dataset. You can proceed to the next phase.")
+            with tab3:
+                st.markdown("**Keep all outliers in the dataset:**")
+                st.info("ℹ️ Outliers will remain in the dataset. You can proceed to the next phase.")
+                
+                if st.button("✅ Confirm - Keep All Outliers", type="secondary", use_container_width=True):
+                    st.success("✅ Outliers kept. You can proceed to the next phase!")
         else:
             st.success("✅ No outliers detected in the dataset!")
         
