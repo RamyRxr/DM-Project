@@ -926,6 +926,210 @@ if st.session_state.df is not None:
         st.dataframe(types_df, use_container_width=True, hide_index=True)
 
 # ===========================
+# PHASE 6: DATA NORMALIZATION
+# ===========================
+
+if st.session_state.df is not None:
+    st.header("⚙️ Phase 6: Data Normalization")
+    st.caption("Prepare numerical data for machine learning algorithms")
+    
+    # Initialize normalized data in session state
+    if 'normalized_df' not in st.session_state:
+        st.session_state.normalized_df = None
+    if 'normalization_method' not in st.session_state:
+        st.session_state.normalization_method = None
+    
+    # Get numeric columns only
+    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if len(numeric_cols) == 0:
+        st.warning("⚠️ No numeric columns found in the dataset.")
+    else:
+        st.info(f"Found **{len(numeric_cols)}** numeric column(s) for normalization")
+        
+        # ==================
+        # NORMALIZATION STRATEGY SELECTION
+        # ==================
+        st.subheader("📊 Select Normalization Strategy")
+        
+        normalization_option = st.radio(
+            "Choose a normalization method:",
+            [
+                "None (Skip Normalization)",
+                "Min-Max Normalization",
+                "Z-Score Standardization"
+            ],
+            key="norm_method"
+        )
+        
+        # Show formulas and explanations
+        with st.expander("ℹ️ Learn About Normalization Methods"):
+            st.markdown("""
+            ### Min-Max Normalization
+            Scales values to a range [0, 1]
+            
+            **Formula:** $X_{norm} = \\frac{X - X_{min}}{X_{max} - X_{min}}$
+            
+            - **Use when:** You need values in a specific range
+            - **Preserves:** Original distribution shape
+            - **Sensitive to:** Outliers
+            
+            ---
+            
+            ### Z-Score Standardization
+            Transforms data to have mean=0 and std=1
+            
+            **Formula:** $Z = \\frac{X - \\mu}{\\sigma}$
+            
+            Where:
+            - $\\mu$ = mean
+            - $\\sigma$ = standard deviation
+            
+            - **Use when:** Features have different scales
+            - **Preserves:** Outlier information
+            - **Assumes:** Approximately normal distribution
+            """)
+        
+        st.divider()
+        
+        # ==================
+        # PREVIEW BEFORE NORMALIZATION
+        # ==================
+        if normalization_option != "None (Skip Normalization)":
+            st.subheader("👀 Preview: Before Normalization")
+            
+            # Show statistics before normalization
+            preview_col = st.selectbox(
+                "Select a column to preview statistics:",
+                numeric_cols,
+                key="preview_norm_col"
+            )
+            
+            if preview_col:
+                col_data = st.session_state.df[preview_col].dropna()
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Min", f"{col_data.min():.4f}")
+                with col2:
+                    st.metric("Max", f"{col_data.max():.4f}")
+                with col3:
+                    st.metric("Mean", f"{col_data.mean():.4f}")
+                with col4:
+                    st.metric("Std Dev", f"{col_data.std():.4f}")
+        
+        st.divider()
+        
+        # ==================
+        # APPLY NORMALIZATION
+        # ==================
+        st.subheader("🔄 Apply Normalization")
+        
+        if normalization_option == "None (Skip Normalization)":
+            st.info("ℹ️ No normalization will be applied. Original data will be used.")
+            
+            if st.button("✅ Confirm - Skip Normalization", type="secondary"):
+                st.session_state.normalized_df = st.session_state.df.copy()
+                st.session_state.normalization_method = "None"
+                st.success("✅ Skipped normalization. Using original data.")
+        
+        elif normalization_option == "Min-Max Normalization":
+            st.info("📊 Min-Max will scale all numeric columns to range [0, 1]")
+            
+            if st.button("🔄 Apply Min-Max Normalization", type="primary", use_container_width=True):
+                # Create a copy of the dataframe
+                normalized_df = st.session_state.df.copy()
+                
+                # Apply Min-Max normalization to each numeric column
+                for col in numeric_cols:
+                    col_data = normalized_df[col]
+                    min_val = col_data.min()
+                    max_val = col_data.max()
+                    
+                    # Avoid division by zero
+                    if max_val - min_val != 0:
+                        normalized_df[col] = (col_data - min_val) / (max_val - min_val)
+                    else:
+                        st.warning(f"⚠️ Column '{col}' has constant values, skipping normalization")
+                
+                st.session_state.normalized_df = normalized_df
+                st.session_state.normalization_method = "Min-Max"
+                st.success(f"✅ Successfully applied Min-Max normalization to {len(numeric_cols)} column(s)!")
+        
+        elif normalization_option == "Z-Score Standardization":
+            st.info("📊 Z-Score will transform data to have mean=0 and std=1")
+            
+            if st.button("🔄 Apply Z-Score Standardization", type="primary", use_container_width=True):
+                # Create a copy of the dataframe
+                normalized_df = st.session_state.df.copy()
+                
+                # Apply Z-Score standardization to each numeric column
+                for col in numeric_cols:
+                    col_data = normalized_df[col]
+                    mean_val = col_data.mean()
+                    std_val = col_data.std()
+                    
+                    # Avoid division by zero
+                    if std_val != 0:
+                        normalized_df[col] = (col_data - mean_val) / std_val
+                    else:
+                        st.warning(f"⚠️ Column '{col}' has zero std deviation, skipping normalization")
+                
+                st.session_state.normalized_df = normalized_df
+                st.session_state.normalization_method = "Z-Score"
+                st.success(f"✅ Successfully applied Z-Score standardization to {len(numeric_cols)} column(s)!")
+        
+        # ==================
+        # SHOW NORMALIZED DATA
+        # ==================
+        if st.session_state.normalized_df is not None:
+            st.divider()
+            st.subheader("📊 After Normalization")
+            st.caption(f"Method Applied: **{st.session_state.normalization_method}**")
+            
+            # Show statistics after normalization
+            if st.session_state.normalization_method != "None":
+                preview_col = st.selectbox(
+                    "Select a column to view normalized statistics:",
+                    numeric_cols,
+                    key="preview_norm_col_after"
+                )
+                
+                if preview_col:
+                    col_data = st.session_state.normalized_df[preview_col].dropna()
+                    
+                    col1, col2, col3, col4 = st.columns(4)
+                    with col1:
+                        st.metric("Min", f"{col_data.min():.4f}")
+                    with col2:
+                        st.metric("Max", f"{col_data.max():.4f}")
+                    with col3:
+                        st.metric("Mean", f"{col_data.mean():.4f}")
+                    with col4:
+                        st.metric("Std Dev", f"{col_data.std():.4f}")
+            
+            # Display normalized dataset
+            st.subheader("📋 Normalized Dataset")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Rows", st.session_state.normalized_df.shape[0])
+            with col2:
+                st.metric("Columns", st.session_state.normalized_df.shape[1])
+            
+            st.dataframe(st.session_state.normalized_df, use_container_width=True, height=400)
+            
+            # Download normalized data
+            csv = st.session_state.normalized_df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Download Normalized Data",
+                data=csv,
+                file_name="normalized_data.csv",
+                mime="text/csv",
+                type="primary"
+            )
+
+# ===========================
 # SIDEBAR
 # ===========================
 st.sidebar.header("ℹ️ About")
@@ -938,8 +1142,8 @@ st.sidebar.info(
     2. ✅ Data Cleaning
     3. ✅ Outlier Detection
     4. ✅ Data Exploration
-    5. ✅ Data Typing (Current Phase)
-    6. ⏳ Normalization
+    5. ✅ Data Typing
+    6. ✅ Normalization (Current Phase)
     7. ⏳ Unsupervised Learning
     8. ⏳ Supervised Learning
     """

@@ -107,11 +107,11 @@
 ## ⚙️ PHASE 8 – DATA NORMALIZATION
 **Objective:** Prepare numerical data for learning algorithms.
 
-- [ ] **Allow user to choose normalization strategy**
-- [ ] **Apply Min‑Max normalization**
-- [ ] **Apply Z‑score standardization**
-- [ ] **Skip normalization option**
-- [ ] **Normalize numerical columns only**
+- [x] **Allow user to choose normalization strategy**
+- [x] **Apply Min‑Max normalization**
+- [x] **Apply Z‑score standardization**
+- [x] **Skip normalization option**
+- [x] **Normalize numerical columns only**
 
 ---
 
