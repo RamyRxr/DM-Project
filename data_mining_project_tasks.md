@@ -98,9 +98,9 @@
 ## 🧠 PHASE 7 – DATA TYPING & OPTIMIZATION
 **Objective:** Improve data representation without changing meaning.
 
-- [ ] **Detect float columns representing integers**
-- [ ] **Convert floats to integers when valid**
-- [ ] **Validate conversion integrity**
+- [x] **Detect float columns representing integers**
+- [x] **Convert floats to integers when valid**
+- [x] **Validate conversion integrity**
 
 ---
 

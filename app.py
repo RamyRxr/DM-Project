@@ -788,6 +788,144 @@ if st.session_state.df is not None:
             st.warning("⚠️ Need at least 2 numeric columns to create scatter plots")
 
 # ===========================
+# PHASE 5: DATA TYPING & OPTIMIZATION
+# ===========================
+
+if st.session_state.df is not None:
+    st.header("🧠 Phase 5: Data Typing & Optimization")
+    st.caption("Optimize data representation by converting floats to integers where appropriate")
+    
+    # Get all numeric columns
+    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if len(numeric_cols) == 0:
+        st.warning("⚠️ No numeric columns found in the dataset.")
+    else:
+        # ==================
+        # DETECT FLOAT COLUMNS THAT CAN BE INTEGERS
+        # ==================
+        st.subheader("🔍 Float to Integer Detection")
+        
+        # Analyze each float column
+        float_cols = st.session_state.df.select_dtypes(include=['float64', 'float32']).columns.tolist()
+        
+        if len(float_cols) == 0:
+            st.success("✅ No float columns found. All numeric columns are already optimally typed.")
+        else:
+            st.info(f"Found **{len(float_cols)}** float column(s) to analyze")
+            
+            # Check which float columns can be converted to integers
+            convertible_cols = []
+            conversion_info = []
+            
+            for col in float_cols:
+                col_data = st.session_state.df[col].dropna()
+                
+                if len(col_data) > 0:
+                    # Check if all values are integers (no decimal part)
+                    is_integer = (col_data == col_data.astype(int)).all()
+                    
+                    if is_integer:
+                        convertible_cols.append(col)
+                        conversion_info.append({
+                            'Column': col,
+                            'Current Type': 'float64',
+                            'Target Type': 'int64',
+                            'Sample Values': f"{col_data.head(3).tolist()}",
+                            'Non-null Count': len(col_data),
+                            'Status': '✅ Convertible'
+                        })
+                    else:
+                        conversion_info.append({
+                            'Column': col,
+                            'Current Type': 'float64',
+                            'Target Type': '-',
+                            'Sample Values': f"{col_data.head(3).tolist()}",
+                            'Non-null Count': len(col_data),
+                            'Status': '❌ Has decimals'
+                        })
+            
+            # Display analysis table
+            if conversion_info:
+                st.subheader("📊 Type Conversion Analysis")
+                analysis_df = pd.DataFrame(conversion_info)
+                st.dataframe(analysis_df, use_container_width=True, hide_index=True)
+            
+            st.divider()
+            
+            # ==================
+            # CONVERSION CONTROLS
+            # ==================
+            if len(convertible_cols) > 0:
+                st.subheader("⚙️ Convert Float to Integer")
+                st.success(f"✅ Found **{len(convertible_cols)}** column(s) that can be safely converted to integers")
+                
+                # Show which columns will be converted
+                with st.expander("📋 Columns to be converted", expanded=True):
+                    for col in convertible_cols:
+                        st.write(f"- **{col}**")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("🔄 Convert to Integer", type="primary", use_container_width=True):
+                        # Perform conversion
+                        converted_count = 0
+                        for col in convertible_cols:
+                            try:
+                                # Convert to integer, keeping NaN as NaN
+                                st.session_state.df[col] = st.session_state.df[col].astype('Int64')
+                                converted_count += 1
+                            except Exception as e:
+                                st.error(f"Error converting {col}: {e}")
+                        
+                        if converted_count > 0:
+                            st.success(f"✅ Successfully converted {converted_count} column(s) to integer type!")
+                        else:
+                            st.warning("⚠️ No columns were converted")
+                
+                with col2:
+                    if st.button("⏭️ Skip Conversion", type="secondary", use_container_width=True):
+                        st.info("ℹ️ Skipped type conversion. Columns will remain as float type.")
+                
+                # Show validation info
+                st.divider()
+                st.subheader("✅ Conversion Validation")
+                st.info("""
+                **Validation Process:**
+                - ✓ Checks if all non-null values are whole numbers
+                - ✓ Preserves NaN/null values
+                - ✓ Uses Int64 type (pandas nullable integer)
+                - ✓ No data loss during conversion
+                """)
+            else:
+                st.warning("⚠️ No float columns can be converted to integers")
+                st.info("All float columns contain decimal values and cannot be safely converted.")
+        
+        st.divider()
+        
+        # ==================
+        # CURRENT DATA TYPES
+        # ==================
+        st.subheader("📋 Current Data Types")
+        
+        types_summary = []
+        for col in st.session_state.df.columns:
+            dtype = st.session_state.df[col].dtype
+            non_null = st.session_state.df[col].notna().sum()
+            null_count = st.session_state.df[col].isna().sum()
+            
+            types_summary.append({
+                'Column': col,
+                'Data Type': str(dtype),
+                'Non-null Values': non_null,
+                'Null Values': null_count
+            })
+        
+        types_df = pd.DataFrame(types_summary)
+        st.dataframe(types_df, use_container_width=True, hide_index=True)
+
+# ===========================
 # SIDEBAR
 # ===========================
 st.sidebar.header("ℹ️ About")
@@ -799,10 +937,11 @@ st.sidebar.info(
     1. ✅ Data Loading
     2. ✅ Data Cleaning
     3. ✅ Outlier Detection
-    4. ✅ Data Exploration (Current Phase)
-    5. ⏳ Normalization
-    6. ⏳ Unsupervised Learning
-    7. ⏳ Supervised Learning
+    4. ✅ Data Exploration
+    5. ✅ Data Typing (Current Phase)
+    6. ⏳ Normalization
+    7. ⏳ Unsupervised Learning
+    8. ⏳ Supervised Learning
     """
 )
 
