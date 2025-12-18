@@ -74,10 +74,10 @@
 ## 📉 PHASE 5 – OUTLIER DETECTION & HANDLING
 **Objective:** Identify extreme values visually using basic techniques.
 
-- [ ] **Generate boxplot per numeric column** → Visualize data spread.
-- [ ] **Identify outliers visually** → Detect extreme values.
-- [ ] **Remove outliers** → Delete selected outliers.
-- [ ] **Keep outliers** → Allow user to ignore outliers.
+- [x] **Generate boxplot per numeric column** → Visualize data spread.
+- [x] **Identify outliers visually** → Detect extreme values.
+- [x] **Remove outliers** → Delete selected outliers.
+- [x] **Keep outliers** → Allow user to ignore outliers.
 
 ---
 

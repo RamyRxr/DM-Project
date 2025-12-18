@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
 
 # ===========================
 # CONFIGURATION
@@ -73,6 +75,19 @@ def replace_values_with_nan(df, values_to_replace):
             df_clean.loc[mask, col] = np.nan
     
     return df_clean
+
+def detect_outliers_iqr(series):
+    """
+    Detect outliers using the IQR (Interquartile Range) method.
+    Returns a boolean mask where True indicates an outlier.
+    """
+    Q1 = series.quantile(0.25)
+    Q3 = series.quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    return (series < lower_bound) | (series > upper_bound)
 
 # ===========================
 # MAIN APPLICATION
@@ -386,6 +401,173 @@ if st.session_state.df is not None:
     )
 
 # ===========================
+# PHASE 3: OUTLIER DETECTION
+# ===========================
+
+if st.session_state.df is not None:
+    st.header("📉 Phase 3: Outlier Detection & Handling")
+    
+    # Get numeric columns only
+    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if len(numeric_cols) == 0:
+        st.warning("⚠️ No numeric columns found in the dataset. Please clean your data first.")
+    else:
+        st.info(f"Found **{len(numeric_cols)}** numeric column(s) for outlier analysis")
+        
+        # ==================
+        # OUTLIER VISUALIZATION
+        # ==================
+        st.subheader("📊 Boxplot Visualization")
+        
+        # Column selector for boxplot
+        selected_col = st.selectbox(
+            "Select a column to visualize:",
+            numeric_cols,
+            key="outlier_col_select"
+        )
+        
+        if selected_col:
+            # Create boxplot
+            fig = px.box(
+                st.session_state.df,
+                y=selected_col,
+                title=f"Boxplot for {selected_col}",
+                labels={selected_col: "Value"},
+                height=500
+            )
+            
+            fig.update_layout(
+                showlegend=False,
+                yaxis_title=selected_col,
+                xaxis_title=""
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Calculate outlier statistics for selected column
+            col_data = st.session_state.df[selected_col].dropna()
+            outlier_mask = detect_outliers_iqr(col_data)
+            n_outliers = outlier_mask.sum()
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Values", len(col_data))
+            with col2:
+                st.metric("Outliers", n_outliers)
+            with col3:
+                st.metric("Outlier %", f"{(n_outliers/len(col_data)*100):.2f}%")
+            with col4:
+                Q1 = col_data.quantile(0.25)
+                Q3 = col_data.quantile(0.75)
+                IQR = Q3 - Q1
+                st.metric("IQR", f"{IQR:.2f}")
+        
+        st.divider()
+        
+        # ==================
+        # OUTLIER DETECTION FOR ALL COLUMNS
+        # ==================
+        st.subheader("🔍 Outlier Detection Summary")
+        
+        # Calculate outliers for all numeric columns
+        outlier_summary = []
+        total_outliers = 0
+        
+        for col in numeric_cols:
+            col_data = st.session_state.df[col].dropna()
+            if len(col_data) > 0:
+                outlier_mask = detect_outliers_iqr(col_data)
+                n_outliers = outlier_mask.sum()
+                total_outliers += n_outliers
+                
+                Q1 = col_data.quantile(0.25)
+                Q3 = col_data.quantile(0.75)
+                IQR = Q3 - Q1
+                lower_bound = Q1 - 1.5 * IQR
+                upper_bound = Q3 + 1.5 * IQR
+                
+                outlier_summary.append({
+                    'Column': col,
+                    'Total Values': len(col_data),
+                    'Outliers': n_outliers,
+                    'Outlier %': f"{(n_outliers/len(col_data)*100):.2f}%",
+                    'Lower Bound': f"{lower_bound:.2f}",
+                    'Upper Bound': f"{upper_bound:.2f}",
+                    'IQR': f"{IQR:.2f}"
+                })
+        
+        if outlier_summary:
+            summary_df = pd.DataFrame(outlier_summary)
+            st.dataframe(summary_df, use_container_width=True, hide_index=True)
+            
+            st.info(f"**Total outliers detected across all columns: {total_outliers}**")
+        
+        st.divider()
+        
+        # ==================
+        # OUTLIER HANDLING
+        # ==================
+        st.subheader("⚙️ Outlier Handling")
+        
+        if total_outliers > 0:
+            st.warning(f"⚠️ Found **{total_outliers}** outlier(s) in the dataset")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("🗑️ Remove All Outliers", type="primary", use_container_width=True):
+                    # Remove rows that contain outliers in any numeric column
+                    mask = pd.Series([True] * len(st.session_state.df))
+                    
+                    for col in numeric_cols:
+                        col_data = st.session_state.df[col]
+                        outlier_mask = detect_outliers_iqr(col_data.dropna())
+                        
+                        # Create full mask for the column (including NaN positions)
+                        full_mask = pd.Series([False] * len(st.session_state.df))
+                        full_mask.loc[col_data.dropna().index] = outlier_mask.values
+                        
+                        mask = mask & ~full_mask
+                    
+                    original_count = len(st.session_state.df)
+                    st.session_state.df = st.session_state.df[mask].reset_index(drop=True)
+                    removed_count = original_count - len(st.session_state.df)
+                    
+                    st.success(f"✅ Removed {removed_count} row(s) containing outliers!")
+            
+            with col2:
+                if st.button("✅ Keep Outliers", type="secondary", use_container_width=True):
+                    st.info("ℹ️ Outliers will be kept in the dataset. You can proceed to the next phase.")
+        else:
+            st.success("✅ No outliers detected in the dataset!")
+        
+        st.divider()
+        
+        # ==================
+        # CURRENT DATASET AFTER OUTLIER HANDLING
+        # ==================
+        st.subheader("📋 Current Dataset")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Rows", st.session_state.df.shape[0])
+        with col2:
+            st.metric("Columns", st.session_state.df.shape[1])
+        with col3:
+            # Recalculate outliers for current dataset
+            current_outliers = 0
+            for col in numeric_cols:
+                if col in st.session_state.df.columns:
+                    col_data = st.session_state.df[col].dropna()
+                    if len(col_data) > 0:
+                        outlier_mask = detect_outliers_iqr(col_data)
+                        current_outliers += outlier_mask.sum()
+            st.metric("Outliers", current_outliers)
+        
+        st.dataframe(st.session_state.df, use_container_width=True, height=400)
+
+# ===========================
 # SIDEBAR
 # ===========================
 st.sidebar.header("ℹ️ About")
@@ -395,8 +577,8 @@ st.sidebar.info(
     
     This application guides you through:
     1. ✅ Data Loading
-    2. ✅ Data Cleaning (Current Phase)
-    3. ⏳ Outlier Detection
+    2. ✅ Data Cleaning
+    3. ✅ Outlier Detection (Current Phase)
     4. ⏳ Data Exploration
     5. ⏳ Normalization
     6. ⏳ Unsupervised Learning
