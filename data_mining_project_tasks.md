@@ -84,14 +84,14 @@
 ## 📊 PHASE 6 – DATA EXPLORATION & DESCRIPTIVE ANALYSIS
 **Objective:** Understand dataset distribution and relationships.
 
-- [ ] **Compute minimum values**
-- [ ] **Compute maximum values**
-- [ ] **Compute mean**
-- [ ] **Compute median**
-- [ ] **Compute mode**
-- [ ] **Compute first quartile (Q1)**
-- [ ] **Compute third quartile (Q3)**
-- [ ] **Generate scatter plots** → Visualize relationships between two attributes.
+- [x] **Compute minimum values**
+- [x] **Compute maximum values**
+- [x] **Compute mean**
+- [x] **Compute median**
+- [x] **Compute mode**
+- [x] **Compute first quartile (Q1)**
+- [x] **Compute third quartile (Q3)**
+- [x] **Generate scatter plots** → Visualize relationships between two attributes.
 
 ---
 

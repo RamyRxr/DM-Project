@@ -626,6 +626,168 @@ if st.session_state.df is not None:
         st.dataframe(st.session_state.df, use_container_width=True, height=400)
 
 # ===========================
+# PHASE 4: DATA EXPLORATION & DESCRIPTIVE ANALYSIS
+# ===========================
+
+if st.session_state.df is not None:
+    st.header("📊 Phase 4: Data Exploration & Descriptive Analysis")
+    
+    # Get numeric columns only
+    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if len(numeric_cols) == 0:
+        st.warning("⚠️ No numeric columns found in the dataset. Please ensure your data is properly cleaned.")
+    else:
+        # ==================
+        # DESCRIPTIVE STATISTICS
+        # ==================
+        st.subheader("📈 Descriptive Statistics")
+        
+        # Column selector for statistics
+        selected_stat_col = st.selectbox(
+            "Select a column for detailed statistics:",
+            numeric_cols,
+            key="stats_col_select"
+        )
+        
+        if selected_stat_col:
+            col_data = st.session_state.df[selected_stat_col].dropna()
+            
+            if len(col_data) == 0:
+                st.warning(f"⚠️ Column '{selected_stat_col}' has no valid numeric values")
+            else:
+                # Calculate all statistics
+                min_val = col_data.min()
+                max_val = col_data.max()
+                mean_val = col_data.mean()
+                median_val = col_data.median()
+                mode_result = col_data.mode()
+                mode_val = mode_result.iloc[0] if len(mode_result) > 0 else "N/A"
+                q1_val = col_data.quantile(0.25)
+                q3_val = col_data.quantile(0.75)
+                
+                # Display in columns
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Minimum", f"{min_val:.4f}")
+                    st.metric("Q1 (25%)", f"{q1_val:.4f}")
+                
+                with col2:
+                    st.metric("Mean", f"{mean_val:.4f}")
+                    st.metric("Median", f"{median_val:.4f}")
+                
+                with col3:
+                    st.metric("Maximum", f"{max_val:.4f}")
+                    st.metric("Q3 (75%)", f"{q3_val:.4f}")
+                
+                with col4:
+                    st.metric("Mode", f"{mode_val:.4f}" if mode_val != "N/A" else "N/A")
+                    st.metric("Range", f"{(max_val - min_val):.4f}")
+                
+                st.divider()
+                
+                # Summary table for all numeric columns
+                st.subheader("📋 Summary Statistics for All Numeric Columns")
+                
+                summary_data = []
+                for col in numeric_cols:
+                    col_data = st.session_state.df[col].dropna()
+                    
+                    if len(col_data) > 0:
+                        mode_result = col_data.mode()
+                        mode_val = mode_result.iloc[0] if len(mode_result) > 0 else np.nan
+                        
+                        summary_data.append({
+                            'Column': col,
+                            'Min': f"{col_data.min():.4f}",
+                            'Q1': f"{col_data.quantile(0.25):.4f}",
+                            'Mean': f"{col_data.mean():.4f}",
+                            'Median': f"{col_data.median():.4f}",
+                            'Q3': f"{col_data.quantile(0.75):.4f}",
+                            'Max': f"{col_data.max():.4f}",
+                            'Mode': f"{mode_val:.4f}" if not pd.isna(mode_val) else "N/A"
+                        })
+                
+                if summary_data:
+                    summary_df = pd.DataFrame(summary_data)
+                    st.dataframe(summary_df, use_container_width=True, hide_index=True)
+        
+        st.divider()
+        
+        # ==================
+        # SCATTER PLOT VISUALIZATION
+        # ==================
+        st.subheader("🔵 Scatter Plot Visualization")
+        st.caption("Visualize relationships between two numeric attributes")
+        
+        if len(numeric_cols) >= 2:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                x_axis = st.selectbox(
+                    "Select X-axis:",
+                    numeric_cols,
+                    key="scatter_x"
+                )
+            
+            with col2:
+                # Filter out the selected x-axis from y-axis options
+                y_options = [col for col in numeric_cols if col != x_axis]
+                if len(y_options) > 0:
+                    y_axis = st.selectbox(
+                        "Select Y-axis:",
+                        y_options,
+                        key="scatter_y"
+                    )
+                else:
+                    y_axis = numeric_cols[0]
+                    st.warning("⚠️ Only one numeric column available")
+            
+            if x_axis and y_axis:
+                # Create scatter plot
+                fig = px.scatter(
+                    st.session_state.df,
+                    x=x_axis,
+                    y=y_axis,
+                    title=f"Scatter Plot: {x_axis} vs {y_axis}",
+                    labels={x_axis: x_axis, y_axis: y_axis},
+                    height=500,
+                    opacity=0.6
+                )
+                
+                fig.update_traces(marker=dict(size=8, line=dict(width=0.5, color='white')))
+                fig.update_layout(
+                    xaxis_title=x_axis,
+                    yaxis_title=y_axis,
+                    hovermode='closest'
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show correlation coefficient
+                correlation = st.session_state.df[[x_axis, y_axis]].corr().iloc[0, 1]
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Correlation", f"{correlation:.4f}")
+                with col2:
+                    # Count valid pairs
+                    valid_pairs = st.session_state.df[[x_axis, y_axis]].dropna().shape[0]
+                    st.metric("Valid Data Points", valid_pairs)
+                with col3:
+                    # Correlation interpretation
+                    if abs(correlation) > 0.7:
+                        strength = "Strong"
+                    elif abs(correlation) > 0.4:
+                        strength = "Moderate"
+                    else:
+                        strength = "Weak"
+                    st.metric("Correlation Strength", strength)
+        else:
+            st.warning("⚠️ Need at least 2 numeric columns to create scatter plots")
+
+# ===========================
 # SIDEBAR
 # ===========================
 st.sidebar.header("ℹ️ About")
@@ -636,8 +798,8 @@ st.sidebar.info(
     This application guides you through:
     1. ✅ Data Loading
     2. ✅ Data Cleaning
-    3. ✅ Outlier Detection (Current Phase)
-    4. ⏳ Data Exploration
+    3. ✅ Outlier Detection
+    4. ✅ Data Exploration (Current Phase)
     5. ⏳ Normalization
     6. ⏳ Unsupervised Learning
     7. ⏳ Supervised Learning
