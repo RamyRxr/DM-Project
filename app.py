@@ -87,6 +87,12 @@ if 'original_df' not in st.session_state:
     st.session_state.original_df = None
 if 'custom_indicators' not in st.session_state:
     st.session_state.custom_indicators = []
+if 'data_cleaned' not in st.session_state:
+    st.session_state.data_cleaned = False
+if 'uploaded_file_id' not in st.session_state:
+    st.session_state.uploaded_file_id = None
+if 'cleaned_df' not in st.session_state:
+    st.session_state.cleaned_df = None
 
 # ===========================
 # PHASE 1: DATA LOADING
@@ -97,38 +103,45 @@ st.header("📂 Phase 1: Data Loading & Handling")
 uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
 if uploaded_file is not None:
-    try:
-        # Load the data as-is (don't convert yet)
-        df = pd.read_csv(uploaded_file)
-        
-        st.session_state.df = df.copy()
-        st.session_state.original_df = df.copy()
-        
-        st.success(f"✅ File uploaded successfully!")
-        
+    # Only load the file if it's a new file (prevent reloading on every rerun)
+    file_id = uploaded_file.file_id
+    
+    if st.session_state.uploaded_file_id != file_id:
+        try:
+            # Load the data as-is (don't convert yet)
+            df = pd.read_csv(uploaded_file)
+            
+            st.session_state.df = df.copy()
+            st.session_state.original_df = df.copy()
+            st.session_state.data_cleaned = False  # Reset cleaning flag on new upload
+            st.session_state.uploaded_file_id = file_id
+            
+            st.success(f"✅ File uploaded successfully!")
+            
+        except Exception as e:
+            st.error(f"❌ Error loading file: {e}")
+    
+    if st.session_state.df is not None:
         # Display metadata
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Rows", df.shape[0])
+            st.metric("Rows", st.session_state.df.shape[0])
         with col2:
-            st.metric("Columns", df.shape[1])
+            st.metric("Columns", st.session_state.df.shape[1])
         with col3:
-            st.metric("Total Cells", df.shape[0] * df.shape[1])
+            st.metric("Total Cells", st.session_state.df.shape[0] * st.session_state.df.shape[1])
         
         # Show data types
         with st.expander("📋 View Column Data Types"):
             types_df = pd.DataFrame({
-                'Column': df.columns,
-                'Data Type': df.dtypes.values
+                'Column': st.session_state.df.columns,
+                'Data Type': st.session_state.df.dtypes.values
             })
             st.dataframe(types_df, use_container_width=True)
         
         # Display the dataset
         st.subheader("Complete Dataset")
-        st.dataframe(df, use_container_width=True, height=400)
-        
-    except Exception as e:
-        st.error(f"❌ Error loading file: {e}")
+        st.dataframe(st.session_state.df, use_container_width=True, height=400)
 else:
     st.info("👆 Please upload a CSV file to begin.")
 
@@ -139,22 +152,18 @@ else:
 if st.session_state.df is not None:
     st.header("🧹 Phase 2: Data Cleaning & Quality Control")
     
-    df = st.session_state.df
-    
     # ==================
     # DUPLICATE HANDLING
     # ==================
     st.subheader("🔄 Duplicate Rows")
     
-    dup_count = df.duplicated().sum()
+    dup_count = st.session_state.df.duplicated().sum()
     
     if dup_count > 0:
         st.warning(f"⚠️ Found **{dup_count}** duplicate rows")
         if st.button("Remove Duplicates", type="primary"):
-            df_cleaned = st.session_state.df.drop_duplicates().reset_index(drop=True)
-            st.session_state.df = df_cleaned
+            st.session_state.df = st.session_state.df.drop_duplicates().reset_index(drop=True)
             st.success(f"✅ Removed {dup_count} duplicate rows!")
-            st.rerun()
     else:
         st.success("✅ No duplicate rows found")
     
@@ -176,7 +185,6 @@ if st.session_state.df is not None:
         if st.button("🔎 Scan for Problematic Values", type="primary", use_container_width=True):
             problems = detect_problematic_values(st.session_state.df)
             st.session_state.detected_problems = problems
-            st.rerun()
         
         if hasattr(st.session_state, 'detected_problems'):
             problems = st.session_state.detected_problems
@@ -191,31 +199,18 @@ if st.session_state.df is not None:
                 st.dataframe(problems_df, use_container_width=True, hide_index=True)
                 
                 if st.button("🧹 Auto Clean (Convert to Numeric)", type="primary", use_container_width=True):
-                    df_cleaned = st.session_state.df.copy()
-                    converted_info = []
+                    # Convert object columns to numeric
+                    object_cols = st.session_state.df.select_dtypes(include=['object']).columns.tolist()
+                    converted_count = len(object_cols)
                     
-                    # Only convert object (string) columns to numeric
-                    for col in df_cleaned.select_dtypes(include=['object']).columns:
-                        original_col = df_cleaned[col].copy()
-                        numeric_col = pd.to_numeric(df_cleaned[col], errors='coerce')
-                        
-                        # Find which values were replaced with NaN
-                        replaced_mask = numeric_col.isna() & original_col.notna()
-                        if replaced_mask.any():
-                            replaced_values = original_col[replaced_mask].unique()
-                            converted_info.append(f"**{col}**: `{list(replaced_values)}`")
-                        
-                        df_cleaned[col] = numeric_col
+                    for col in object_cols:
+                        st.session_state.df[col] = pd.to_numeric(st.session_state.df[col], errors='coerce')
                     
-                    st.session_state.df = df_cleaned
-                    delattr(st.session_state, 'detected_problems')
-                    
-                    if converted_info:
-                        st.success("✅ Converted object columns to numeric!")
-                        st.info("Replaced non-numeric values with NaN:\n" + "\n".join(converted_info))
-                    else:
-                        st.success("✅ All columns already numeric!")
-                    st.rerun()
+                    st.session_state.data_cleaned = True
+                    st.session_state.cleaned_df = st.session_state.df.copy()  # Save cleaned state
+                    if hasattr(st.session_state, 'detected_problems'):
+                        delattr(st.session_state, 'detected_problems')
+                    st.success(f"✅ Converted {converted_count} columns to numeric - problematic values are now NaN!")
             else:
                 st.success("✅ No problematic values detected!")
     
@@ -236,7 +231,6 @@ if st.session_state.df is not None:
                 indicator = new_indicator.strip()
                 if indicator not in st.session_state.custom_indicators:
                     st.session_state.custom_indicators.append(indicator)
-                    st.rerun()
         
         # Display current indicators
         if st.session_state.custom_indicators:
@@ -249,40 +243,25 @@ if st.session_state.df is not None:
                 with col_b:
                     if st.button("❌", key=f"del_{idx}"):
                         st.session_state.custom_indicators.remove(indicator)
-                        st.rerun()
             
             st.markdown("---")
             
             if st.button("✅ Replace with NaN", type="primary", use_container_width=True):
-                df_cleaned = st.session_state.df.copy()
-                converted_info = []
-                
-                # First replace custom indicators with NaN
-                for col in df_cleaned.columns:
+                # Replace custom indicators with NaN
+                for col in st.session_state.df.columns:
                     for val in st.session_state.custom_indicators:
-                        mask = df_cleaned[col].astype(str).str.strip().str.lower() == str(val).strip().lower()
-                        df_cleaned.loc[mask, col] = np.nan
+                        mask = st.session_state.df[col].astype(str).str.strip().str.lower() == str(val).strip().lower()
+                        st.session_state.df.loc[mask, col] = np.nan
                 
-                # Then convert object columns to numeric
-                for col in df_cleaned.select_dtypes(include=['object']).columns:
-                    original_col = df_cleaned[col].copy()
-                    numeric_col = pd.to_numeric(df_cleaned[col], errors='coerce')
-                    
-                    replaced_mask = numeric_col.isna() & original_col.notna()
-                    if replaced_mask.any():
-                        replaced_values = original_col[replaced_mask].unique()
-                        converted_info.append(f"**{col}**: `{list(replaced_values)}`")
-                    
-                    df_cleaned[col] = numeric_col
+                # Convert object columns to numeric
+                for col in st.session_state.df.select_dtypes(include=['object']).columns:
+                    st.session_state.df[col] = pd.to_numeric(st.session_state.df[col], errors='coerce')
                 
                 count = len(st.session_state.custom_indicators)
-                st.session_state.df = df_cleaned
+                st.session_state.data_cleaned = True
+                st.session_state.cleaned_df = st.session_state.df.copy()  # Save cleaned state
                 st.session_state.custom_indicators = []
-                
                 st.success(f"✅ Replaced {count} custom value(s) with NaN and converted to numeric!")
-                if converted_info:
-                    st.info("Additional values converted to NaN:\n" + "\n".join(converted_info))
-                st.rerun()
         else:
             st.info("No custom indicators added yet")
     
@@ -292,13 +271,14 @@ if st.session_state.df is not None:
     # NaN HANDLING STRATEGIES
     # ==================
     
-    # Count NaN values (always use the current session state)
+    st.subheader("🔧 Handle NaN Values")
+    
+    # Count NaN values
     nan_counts = st.session_state.df.isnull().sum()
     nan_cols = nan_counts[nan_counts > 0]
     total_nans = nan_counts.sum()
     
     if total_nans > 0:
-        st.subheader("🔧 Handle NaN Values")
         st.warning(f"⚠️ Dataset contains **{total_nans}** NaN values across **{len(nan_cols)}** column(s)")
         
         # Show NaN distribution
@@ -309,8 +289,13 @@ if st.session_state.df is not None:
                 'Percentage': (nan_cols.values / len(st.session_state.df) * 100).round(2)
             })
             st.dataframe(nan_df, use_container_width=True, hide_index=True)
-        
-        # Strategy selection
+    else:
+        st.success("✅ No NaN values found in the dataset!")
+    
+    # Strategy selection (always visible)
+    col_select, col_reset = st.columns([3, 1])
+    
+    with col_select:
         strategy = st.selectbox(
             "Select NaN handling strategy:",
             [
@@ -325,52 +310,58 @@ if st.session_state.df is not None:
             ],
             key="nan_strategy"
         )
-        
-        if strategy != "-- Select Strategy --":
-            if st.button("st.session_state.🔄 Apply Strategy", type="primary"):
-                df_clean = df.copy()
+    
+    with col_reset:
+        st.write("")  # Spacing
+        st.write("")  # Spacing
+        if st.button("🔄 Reset", type="secondary", use_container_width=True):
+            if st.session_state.cleaned_df is not None:
+                st.session_state.df = st.session_state.cleaned_df.copy()
+                st.success("✅ Reset to cleaned data with NaN!")
+            else:
+                st.warning("⚠️ No cleaned data to reset to!")
+    
+    if strategy != "-- Select Strategy --":
+        if st.button("🔄 Apply Strategy", type="primary"):
                 
                 if strategy == "Drop rows with NaN":
-                    before = len(df_clean)
-                    df_clean = df_clean.dropna(axis=0).reset_index(drop=True)
-                    st.success(f"✅ Dropped {before - len(df_clean)} rows")
+                    before = len(st.session_state.df)
+                    st.session_state.df = st.session_state.df.dropna(axis=0).reset_index(drop=True)
+                    st.success(f"✅ Dropped {before - len(st.session_state.df)} rows")
                 
                 elif strategy == "Drop columns with NaN":
-                    before = len(df_clean.columns)
-                    df_clean = df_clean.dropna(axis=1)
-                    st.success(f"✅ Dropped {before - len(df_clean.columns)} columns")
+                    before = len(st.session_state.df.columns)
+                    st.session_state.df = st.session_state.df.dropna(axis=1)
+                    st.success(f"✅ Dropped {before - len(st.session_state.df.columns)} columns")
                 
                 elif strategy == "Replace with 0":
-                    df_clean = df_clean.fillna(0)
+                    st.session_state.df = st.session_state.df.fillna(0)
                     st.success("✅ Replaced all NaN with 0")
                 
                 elif strategy == "Replace with mean":
-                    numeric_cols = df_clean.select_dtypes(include=[np.number]).columns
-                    df_clean[numeric_cols] = df_clean[numeric_cols].fillna(df_clean[numeric_cols].mean())
+                    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns
+                    for col in numeric_cols:
+                        st.session_state.df[col] = st.session_state.df[col].fillna(st.session_state.df[col].mean())
                     st.success("✅ Replaced NaN with column mean (numeric columns only)")
                 
                 elif strategy == "Replace with median":
-                    numeric_cols = df_clean.select_dtypes(include=[np.number]).columns
-                    df_clean[numeric_cols] = df_clean[numeric_cols].fillna(df_clean[numeric_cols].median())
+                    numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns
+                    for col in numeric_cols:
+                        st.session_state.df[col] = st.session_state.df[col].fillna(st.session_state.df[col].median())
                     st.success("✅ Replaced NaN with column median (numeric columns only)")
                 
                 elif strategy == "Forward fill":
-                    df_clean = df_clean.fillna(method='ffill')
+                    st.session_state.df = st.session_state.df.ffill()
                     st.success("✅ Applied forward fill")
                 
                 elif strategy == "Backward fill":
-                    df_clean = df_clean.fillna(method='bfill')
+                    st.session_state.df = st.session_state.df.bfill()
                     st.success("✅ Applied backward fill")
-                
-                st.session_state.df = df_clean
-                st.rerun()
-    else:
-        st.success("✅ No NaN values found in the dataset!")
     
     st.divider()
     
     # ==================
-    # FINAL DATASET DISPLAY
+    # CURRENT DATASET
     # ==================
     st.subheader("📋 Current Dataset")
     
