@@ -168,12 +168,23 @@ def render_unsupervised_interface():
             unpacked = results
             if len(unpacked) == 6:
                 clustered_data, fig_scatter_2d, fig_scatter_3d, fig_elbow, fig_hist, metrics = unpacked
-                st.write("#### Clustering Results")
-                if fig_scatter_2d:
-                    st.plotly_chart(fig_scatter_2d, use_container_width=True)
+                
+                # Display optimal k if available
+                if metrics and 'Optimal K (Elbow Method)' in metrics:
+                    optimal_k = metrics['Optimal K (Elbow Method)']
+                    st.success(f"📊 **Recommended Optimal K: {optimal_k}** (based on Elbow Method)")
+                
                 st.write("#### Elbow Method for Optimal k")
                 if fig_elbow:
                     st.plotly_chart(fig_elbow, use_container_width=True)
+                
+                st.write("#### 2D Clustering Visualization")
+                if fig_scatter_2d:
+                    st.plotly_chart(fig_scatter_2d, use_container_width=True)
+                
+                if fig_scatter_3d:
+                    st.write("#### 3D Clustering Visualization")
+                    st.plotly_chart(fig_scatter_3d, use_container_width=True)
             else:
                 st.warning("Algorithm did not return the expected results for display.")
                 

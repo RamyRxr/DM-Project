@@ -219,6 +219,15 @@ def run_kmedoids(data, params):
         _, _, inertia_test = kmedoids_manual(X_np, k_test)
         inertias.append(inertia_test)
     
+    # Detect optimal k using elbow method (simple derivative approach)
+    optimal_k = 3  # Default
+    if len(inertias) > 2:
+        # Calculate the rate of change
+        deltas = np.diff(inertias)
+        # Find the point where the rate of change is minimized (elbow)
+        optimal_k_idx = np.argmax(np.diff(deltas)) + 1
+        optimal_k = list(k_range)[optimal_k_idx] if optimal_k_idx < len(k_range) else n_clusters
+    
     fig_elbow = plot_elbow_curve(inertias, k_range)
     
     # --- Create Histogram ---
@@ -231,7 +240,9 @@ def run_kmedoids(data, params):
         metrics['Davies-Bouldin Index'] = davies_bouldin_score(X_np, labels)
         metrics['Calinski-Harabasz Index'] = calinski_harabasz_score(X_np, labels)
         metrics['Inertia (Sum of distances)'] = inertia
+        metrics['Optimal K (Elbow Method)'] = optimal_k
     else:
         st.warning("Only one cluster found. Cannot compute evaluation metrics.")
+        metrics['Optimal K (Elbow Method)'] = optimal_k
     
     return data, fig_scatter_2d, fig_scatter_3d, fig_elbow, fig_hist, metrics
