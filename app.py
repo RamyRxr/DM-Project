@@ -5,11 +5,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import sys
 sys.path.append('algorithms')
-from algorithms.unsupervised.kmeans import KMeans
-from algorithms.unsupervised.kmedoids import KMedoids
-from algorithms.unsupervised.dbscan import DBSCAN
-from algorithms.unsupervised.agnes import AGNES
-from algorithms.unsupervised.diana import DIANA
 from algorithms.unsupervised.interface import render_unsupervised_interface
 
 # ===========================
@@ -205,25 +200,26 @@ if st.session_state.section == "📥 Data Cleaning":
 
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
-if uploaded_file is not None:
-    # Only load the file if it's a new file (prevent reloading on every rerun)
-    file_id = uploaded_file.file_id
+    if uploaded_file is not None:
+        # Only load the file if it's a new file (prevent reloading on every rerun)
+        file_id = uploaded_file.file_id
+        
+        if st.session_state.uploaded_file_id != file_id:
+            try:
+                # Load the data as-is (don't convert yet)
+                df = pd.read_csv(uploaded_file)
+                
+                st.session_state.df = df.copy()
+                st.session_state.original_df = df.copy()
+                st.session_state.data_cleaned = False  # Reset cleaning flag on new upload
+                st.session_state.uploaded_file_id = file_id
+                
+                st.success(f"✅ File uploaded successfully!")
+                
+            except Exception as e:
+                st.error(f"❌ Error loading file: {e}")
     
-    if st.session_state.uploaded_file_id != file_id:
-        try:
-            # Load the data as-is (don't convert yet)
-            df = pd.read_csv(uploaded_file)
-            
-            st.session_state.df = df.copy()
-            st.session_state.original_df = df.copy()
-            st.session_state.data_cleaned = False  # Reset cleaning flag on new upload
-            st.session_state.uploaded_file_id = file_id
-            
-            st.success(f"✅ File uploaded successfully!")
-            
-        except Exception as e:
-            st.error(f"❌ Error loading file: {e}")
-    
+    # Display data if available
     if st.session_state.df is not None:
         # Display metadata
         col1, col2, col3 = st.columns(3)
@@ -245,15 +241,15 @@ if uploaded_file is not None:
         # Display the dataset
         st.subheader("Complete Dataset")
         st.dataframe(st.session_state.df, use_container_width=True, height=400)
-else:
-    st.info("👆 Please upload a CSV file to begin.")
+    else:
+        st.info("👆 Please upload a CSV file to begin.")
 
-# ===========================
-# PHASE 2: DATA CLEANING
-# ===========================
+    # ===========================
+    # PHASE 2: DATA CLEANING
+    # ===========================
 
-if st.session_state.df is not None:
-    st.header("🧹 Phase 2: Data Cleaning & Quality Control")
+    if st.session_state.df is not None:
+        st.header("🧹 Phase 2: Data Cleaning & Quality Control")
     
     # ==================
     # DUPLICATE HANDLING
@@ -488,12 +484,12 @@ if st.session_state.df is not None:
         type="primary"
     )
 
-# ===========================
-# PHASE 3: OUTLIER DETECTION
-# ===========================
+    # ===========================
+    # PHASE 3: OUTLIER DETECTION
+    # ===========================
 
-if st.session_state.df is not None:
-    st.header("📉 Phase 3: Outlier Detection & Handling")
+    if st.session_state.df is not None:
+        st.header("📉 Phase 3: Outlier Detection & Handling")
     
     # Get numeric columns only
     numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
@@ -773,12 +769,12 @@ if st.session_state.df is not None:
         
         st.dataframe(st.session_state.df, use_container_width=True, height=400)
 
-# ===========================
-# PHASE 4: DATA EXPLORATION & DESCRIPTIVE ANALYSIS
-# ===========================
+    # ===========================
+    # PHASE 4: DATA EXPLORATION & DESCRIPTIVE ANALYSIS
+    # ===========================
 
-if st.session_state.df is not None:
-    st.header("📊 Phase 4: Data Exploration & Descriptive Analysis")
+    if st.session_state.df is not None:
+        st.header("📊 Phase 4: Data Exploration & Descriptive Analysis")
     
     # Get numeric columns only
     numeric_cols = st.session_state.df.select_dtypes(include=[np.number]).columns.tolist()
@@ -935,12 +931,12 @@ if st.session_state.df is not None:
         else:
             st.warning("⚠️ Need at least 2 numeric columns to create scatter plots")
 
-# ===========================
-# PHASE 5: DATA TYPING & OPTIMIZATION
-# ===========================
+    # ===========================
+    # PHASE 5: DATA TYPING & OPTIMIZATION
+    # ===========================
 
-if st.session_state.df is not None:
-    st.header("🧠 Phase 5: Data Typing & Optimization")
+    if st.session_state.df is not None:
+        st.header("🧠 Phase 5: Data Typing & Optimization")
     st.caption("Optimize data representation by converting floats to integers where appropriate")
     
     # Get all numeric columns
@@ -1073,12 +1069,12 @@ if st.session_state.df is not None:
         types_df = pd.DataFrame(types_summary)
         st.dataframe(types_df, use_container_width=True, hide_index=True)
 
-# ===========================
-# PHASE 6: DATA NORMALIZATION
-# ===========================
+    # ===========================
+    # PHASE 6: DATA NORMALIZATION
+    # ===========================
 
-if st.session_state.df is not None:
-    st.header("⚙️ Phase 6: Data Normalization")
+    if st.session_state.df is not None:
+        st.header("⚙️ Phase 6: Data Normalization")
     st.caption("Prepare numerical data for machine learning algorithms")
     
     # Initialize normalized data in session state
