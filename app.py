@@ -141,20 +141,26 @@ st.sidebar.write("**Select Section:**")
 
 # Data Cleaning button (always enabled)
 if st.sidebar.button("📥 Data Cleaning", use_container_width=True, 
-                     type="primary" if st.session_state.section == "📥 Data Cleaning" else "secondary"):
+                     type="primary" if st.session_state.section == "📥 Data Cleaning" else "secondary",
+                     key="btn_data_cleaning"):
     st.session_state.section = "📥 Data Cleaning"
+    st.rerun()
 
 # Unsupervised Learning button (enabled after normalization)
 if st.sidebar.button("🔍 Unsupervised Learning", use_container_width=True, 
                      type="primary" if st.session_state.section == "🔍 Unsupervised Learning" else "secondary",
-                     disabled=not data_ready):
+                     disabled=not data_ready,
+                     key="btn_unsupervised"):
     st.session_state.section = "🔍 Unsupervised Learning"
+    st.rerun()
 
 # Supervised Learning button (enabled after normalization)
 if st.sidebar.button("🎯 Supervised Learning", use_container_width=True, 
                      type="primary" if st.session_state.section == "🎯 Supervised Learning" else "secondary",
-                     disabled=not data_ready):
+                     disabled=not data_ready,
+                     key="btn_supervised"):
     st.session_state.section = "🎯 Supervised Learning"
+    st.rerun()
 
 if not data_ready:
     st.sidebar.warning("⚠️ Complete data cleaning (including normalization) to unlock ML sections")

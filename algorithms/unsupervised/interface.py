@@ -20,28 +20,45 @@ def render_unsupervised_interface():
     # Use normalized data if available, otherwise use cleaned data
     if st.session_state.get('normalized_df') is not None:
         working_df = st.session_state.normalized_df
-        st.success("📊 Using normalized data for clustering")
+        data_source = "Normalized Data"
+        st.success("✅ Using normalized data for clustering - Optimal for distance-based algorithms")
     elif st.session_state.get('cleaned_data_for_ml') is not None:
         working_df = st.session_state.cleaned_data_for_ml
-        st.warning("⚠️ Using cleaned data (not normalized). Normalization is recommended for better results.")
+        data_source = "Cleaned Data (Not Normalized)"
+        st.warning("⚠️ Using cleaned data without normalization. Consider normalizing for better clustering results.")
     else:
         st.error("❌ No data available. Please complete data cleaning first.")
         return
     
     # ==================
-    # DISPLAY CURRENT DATA
+    # DISPLAY CLEANED DATA TABLE FIRST
     # ==================
-    st.subheader("📋 Current Data")
+    st.subheader("📊 Final Cleaned Data")
+    st.caption(f"Data Source: {data_source} | Method: {st.session_state.get('normalization_method', 'N/A')}")
     
-    col1, col2, col3 = st.columns(3)
+    # Display metrics
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Rows", working_df.shape[0])
+        st.metric("Total Rows", working_df.shape[0])
     with col2:
-        st.metric("Columns", working_df.shape[1])
+        st.metric("Total Columns", working_df.shape[1])
     with col3:
         st.metric("Numeric Columns", len(working_df.select_dtypes(include=[np.number]).columns))
+    with col4:
+        st.metric("Missing Values", working_df.isnull().sum().sum())
     
-    st.dataframe(working_df, use_container_width=True, height=300)
+    # Display the full cleaned dataset
+    st.dataframe(working_df, use_container_width=True, height=400)
+    
+    # Download button for cleaned data
+    csv = working_df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Download Final Cleaned Data",
+        data=csv,
+        file_name="final_cleaned_data.csv",
+        mime="text/csv",
+        type="secondary"
+    )
     
     st.divider()
     
