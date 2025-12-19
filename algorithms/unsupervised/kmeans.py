@@ -194,3 +194,27 @@ def run_kmeans(data, params):
                 st.warning(f"Not enough data for 3D visualization after dropping NaNs in '{col_x}', '{col_y}', '{col_z}'.")
         else:
             st.warning("Not enough numeric columns available for 3D visualization.")
+    
+    # --- Elbow Method ---
+    k_range = range(2, min(11, data.shape[0]))  # From 2 to 10 clusters
+    inertias = []
+    for k_test in k_range:
+        _, _, inertia_test = kmeans_manual(X_np, k_test)
+        inertias.append(inertia_test)
+    
+    fig_elbow = plot_elbow_curve(inertias, k_range)
+    
+    # --- Create Histogram ---
+    fig_hist = create_histogram(data)
+    
+    # --- Evaluation Metrics ---
+    metrics = {}
+    if len(set(labels)) > 1:  # Need at least 2 clusters
+        metrics['Silhouette Score'] = silhouette_score(X_np, labels)
+        metrics['Davies-Bouldin Index'] = davies_bouldin_score(X_np, labels)
+        metrics['Calinski-Harabasz Index'] = calinski_harabasz_score(X_np, labels)
+        metrics['Inertia (WCSS)'] = inertia
+    else:
+        st.warning("Only one cluster found. Cannot compute evaluation metrics.")
+    
+    return data, fig_scatter_2d, fig_scatter_3d, fig_elbow, fig_hist, metrics
