@@ -229,22 +229,26 @@ def render_unsupervised_interface():
             with cols_hist[idx % 3]:
                 st.write(f"**{alg_name}**")
                 if fig_hist:
-                    st.plotly_chart(fig_hist, use_container_width=True)
+                    st.plotly_chart(fig_hist, use_container_width=True, key=f"hist_{alg_name}_{idx}")
         
         # Create comparison table
         st.subheader("Evaluation Metrics Comparison Table")
         
         # Build comparison dataframe
-        comparison_df = pd.DataFrame(all_metrics).T
-        comparison_df.index.name = 'Algorithm'
-        comparison_df = comparison_df.reset_index()
-        
-        # Format numeric columns
-        for col in comparison_df.columns:
-            if col != 'Algorithm' and comparison_df[col].dtype in [np.float64, np.int64]:
-                comparison_df[col] = comparison_df[col].apply(lambda x: f"{x:.4f}" if isinstance(x, (int, float)) else x)
-        
-        st.dataframe(comparison_df, use_container_width=True)
+        try:
+            comparison_df = pd.DataFrame(all_metrics).T
+            comparison_df.index.name = 'Algorithm'
+            comparison_df = comparison_df.reset_index()
+            
+            # Display the raw dataframe first
+            st.dataframe(comparison_df.style.format({
+                col: "{:.4f}" for col in comparison_df.columns 
+                if col != 'Algorithm' and pd.api.types.is_numeric_dtype(comparison_df[col])
+            }), use_container_width=True)
+        except Exception as e:
+            st.error(f"Error creating comparison table: {str(e)}")
+            st.write("Raw metrics data:")
+            st.json(all_metrics)
         
         # Determine best algorithm
         st.subheader("🏆 Best Algorithm Recommendation")
