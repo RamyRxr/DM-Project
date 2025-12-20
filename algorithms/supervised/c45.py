@@ -85,13 +85,16 @@ class DecisionNode:
 def build_tree(X, y, depth=0, max_depth=10):
     """Build decision tree recursively"""
     n_samples, n_features = X.shape
-    n_classes = len(np.unique(y))
+    
+    # Convert y to numpy array and ensure int type
+    y_array = np.array(y).astype(int)
+    n_classes = len(np.unique(y_array))
     
     # Stopping criteria
     if depth >= max_depth or n_classes == 1 or n_samples < 2:
         # Leaf node
-        leaf_value = np.bincount(y.astype(int)).argmax()
-        return DecisionNode(value=leaf_value)
+        leaf_value = np.bincount(y_array).argmax()
+        return DecisionNode(value=int(leaf_value))
     
     # Find best split
     best_gain = -1
@@ -103,7 +106,7 @@ def build_tree(X, y, depth=0, max_depth=10):
         thresholds = np.unique(feature_values)
         
         for threshold in thresholds:
-            gain = information_gain(X, y, feature_idx, threshold)
+            gain = information_gain(X, y_array, feature_idx, threshold)
             if gain > best_gain:
                 best_gain = gain
                 best_feature = feature_idx
@@ -111,8 +114,8 @@ def build_tree(X, y, depth=0, max_depth=10):
     
     # If no good split found, create leaf
     if best_gain == -1 or best_feature is None:
-        leaf_value = np.bincount(y.astype(int)).argmax()
-        return DecisionNode(value=leaf_value)
+        leaf_value = np.bincount(y_array).argmax()
+        return DecisionNode(value=int(leaf_value))
     
     # Split data
     left_mask = X.iloc[:, best_feature] <= best_threshold
@@ -120,10 +123,10 @@ def build_tree(X, y, depth=0, max_depth=10):
     
     # Build subtrees
     left_subtree = build_tree(X[left_mask].reset_index(drop=True), 
-                               y[left_mask].reset_index(drop=True), 
+                               y_array[left_mask], 
                                depth + 1, max_depth)
     right_subtree = build_tree(X[right_mask].reset_index(drop=True), 
-                                y[right_mask].reset_index(drop=True), 
+                                y_array[right_mask], 
                                 depth + 1, max_depth)
     
     return DecisionNode(best_feature, best_threshold, left_subtree, right_subtree)
@@ -147,23 +150,27 @@ def run_c45(X_train, X_test, y_train, y_test, params):
     """
     max_depth = params.get('max_depth', 10)
     
+    # Ensure y_train is integer type
+    y_train_int = y_train.astype(int)
+    y_test_int = y_test.astype(int)
+    
     # Build tree
-    tree = build_tree(X_train, y_train.values, max_depth=max_depth)
+    tree = build_tree(X_train, y_train_int, max_depth=max_depth)
     
     # Make predictions
     predictions = []
     for i in range(len(X_test)):
         pred = predict_tree(tree, X_test.iloc[i].values)
-        predictions.append(pred)
+        predictions.append(int(pred))
     
-    y_pred = np.array(predictions)
+    y_pred = np.array(predictions, dtype=int)
     
     # Calculate metrics
-    metrics = calculate_metrics(y_test.values, y_pred)
+    metrics = calculate_metrics(y_test_int.values, y_pred)
     
     # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    classes = np.unique(y_test)
+    cm = confusion_matrix(y_test_int, y_pred)
+    classes = np.unique(y_test_int)
     cm_df = pd.DataFrame(cm, index=[f"True {c}" for c in classes], columns=[f"Pred {c}" for c in classes])
     
     # Create confusion matrix heatmap

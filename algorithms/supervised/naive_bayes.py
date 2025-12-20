@@ -46,19 +46,23 @@ def run_naive_bayes(X_train, X_test, y_train, y_test, params):
     Naive Bayes classification (Gaussian Naive Bayes)
     P(class|features) = P(features|class) * P(class) / P(features)
     """
-    classes = np.unique(y_train)
+    # Ensure integer types for classification
+    y_train_int = y_train.astype(int)
+    y_test_int = y_test.astype(int)
+    
+    classes = np.unique(y_train_int)
     n_features = X_train.shape[1]
     
     # Calculate prior probabilities P(class)
     priors = {}
     for cls in classes:
-        priors[cls] = np.sum(y_train == cls) / len(y_train)
+        priors[cls] = np.sum(y_train_int == cls) / len(y_train_int)
     
     # Calculate mean and std for each feature per class
     means = {}
     stds = {}
     for cls in classes:
-        X_cls = X_train[y_train == cls]
+        X_cls = X_train[y_train_int == cls]
         means[cls] = X_cls.mean(axis=0).values
         stds[cls] = X_cls.std(axis=0).values + 1e-6  # Add small value to avoid division by zero
     
@@ -87,16 +91,16 @@ def run_naive_bayes(X_train, X_test, y_train, y_test, params):
     predictions = []
     for i in range(len(X_test)):
         pred = predict_naive_bayes(X_test.iloc[i].values)
-        predictions.append(pred)
+        predictions.append(int(pred))
     
-    y_pred = np.array(predictions)
+    y_pred = np.array(predictions, dtype=int)
     
     # Calculate metrics
-    metrics = calculate_metrics(y_test.values, y_pred)
+    metrics = calculate_metrics(y_test_int.values, y_pred)
     
     # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    classes_list = np.unique(y_test)
+    cm = confusion_matrix(y_test_int, y_pred)
+    classes_list = np.unique(y_test_int)
     cm_df = pd.DataFrame(cm, index=[f"True {c}" for c in classes_list], columns=[f"Pred {c}" for c in classes_list])
     
     # Create confusion matrix heatmap

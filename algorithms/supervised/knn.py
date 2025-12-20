@@ -87,20 +87,24 @@ def run_knn(X_train, X_test, y_train, y_test, params):
     """
     k = params.get('k', 5)
     
+    # Ensure integer types for classification
+    y_train_int = y_train.astype(int)
+    y_test_int = y_test.astype(int)
+    
     # Make predictions
     predictions = []
     for i in range(len(X_test)):
-        pred = knn_predict(X_train, y_train, X_test.iloc[i], k)
-        predictions.append(pred)
+        pred = knn_predict(X_train, y_train_int, X_test.iloc[i], k)
+        predictions.append(int(pred))
     
-    y_pred = np.array(predictions)
+    y_pred = np.array(predictions, dtype=int)
     
     # Calculate metrics
-    metrics = calculate_metrics(y_test.values, y_pred)
+    metrics = calculate_metrics(y_test_int.values, y_pred)
     
     # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    classes = np.unique(y_test)
+    cm = confusion_matrix(y_test_int, y_pred)
+    classes = np.unique(y_test_int)
     cm_df = pd.DataFrame(cm, index=[f"True {c}" for c in classes], columns=[f"Pred {c}" for c in classes])
     
     # Test multiple k values for comparison
@@ -113,10 +117,10 @@ def run_knn(X_train, X_test, y_train, y_test, params):
     for k_val in k_values:
         preds = []
         for i in range(len(X_test)):
-            pred = knn_predict(X_train, y_train, X_test.iloc[i], k_val)
-            preds.append(pred)
-        y_p = np.array(preds)
-        m = calculate_metrics(y_test.values, y_p)
+            pred = knn_predict(X_train, y_train_int, X_test.iloc[i], k_val)
+            preds.append(int(pred))
+        y_p = np.array(preds, dtype=int)
+        m = calculate_metrics(y_test_int.values, y_p)
         accuracies.append(m['Accuracy'])
         precisions.append(m['Precision'])
         recalls.append(m['Recall'])
