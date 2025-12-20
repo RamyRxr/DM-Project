@@ -51,7 +51,10 @@ def entropy(y):
 
 
 def information_gain(X, y, feature_idx, threshold):
-    """Calculate information gain for a split"""
+    """
+    Calculate Information Gain for a split
+    Information Gain = Parent Entropy - Weighted Child Entropy
+    """
     parent_entropy = entropy(y)
     
     # Split data
@@ -70,6 +73,47 @@ def information_gain(X, y, feature_idx, threshold):
                      np.sum(right_mask) / n * right_entropy)
     
     return parent_entropy - child_entropy
+
+
+def split_information(X, feature_idx, threshold):
+    """
+    Calculate Split Information for Gain Ratio
+    Split Info = -∑ (|Sj|/|S|) * log2(|Sj|/|S|)
+    Where Sj are the subsets after splitting
+    """
+    n = len(X)
+    left_mask = X.iloc[:, feature_idx] <= threshold
+    right_mask = ~left_mask
+    
+    left_count = np.sum(left_mask)
+    right_count = np.sum(right_mask)
+    
+    if left_count == 0 or right_count == 0:
+        return 1e-9  # Avoid division by zero
+    
+    # Calculate split information
+    left_prob = left_count / n
+    right_prob = right_count / n
+    
+    split_info = -(left_prob * np.log2(left_prob + 1e-9) + 
+                   right_prob * np.log2(right_prob + 1e-9))
+    
+    return split_info if split_info > 0 else 1e-9
+
+
+def gain_ratio(X, y, feature_idx, threshold):
+    """
+    Calculate Gain Ratio (C4.5 criterion)
+    Gain Ratio = Information Gain / Split Information
+    
+    This is the key difference from ID3:
+    - ID3 uses Information Gain only
+    - C4.5 uses Gain Ratio to avoid bias toward attributes with many values
+    """
+    ig = information_gain(X, y, feature_idx, threshold)
+    si = split_information(X, feature_idx, threshold)
+    
+    return ig / si if si > 0 else 0
 
 
 class DecisionNode:
@@ -96,8 +140,10 @@ def build_tree(X, y, depth=0, max_depth=10):
         leaf_value = np.bincount(y_array).argmax()
         return DecisionNode(value=int(leaf_value))
     
-    # Find best split
-    best_gain = -1
+    # Find best split using Gain Ratio (C4.5 criterion)
+    # At each node: compute Gain Ratio for each attribute
+    # Select attribute with maximum Gain Ratio
+    best_gain_ratio = -1
     best_feature = None
     best_threshold = None
     
@@ -106,14 +152,15 @@ def build_tree(X, y, depth=0, max_depth=10):
         thresholds = np.unique(feature_values)
         
         for threshold in thresholds:
-            gain = information_gain(X, y_array, feature_idx, threshold)
-            if gain > best_gain:
-                best_gain = gain
+            # Use Gain Ratio instead of Information Gain (C4.5 improvement)
+            gr = gain_ratio(X, y_array, feature_idx, threshold)
+            if gr > best_gain_ratio:
+                best_gain_ratio = gr
                 best_feature = feature_idx
                 best_threshold = threshold
     
     # If no good split found, create leaf
-    if best_gain == -1 or best_feature is None:
+    if best_gain_ratio == -1 or best_feature is None:
         leaf_value = np.bincount(y_array).argmax()
         return DecisionNode(value=int(leaf_value))
     
@@ -146,7 +193,25 @@ def predict_tree(node, x):
 @st.cache_data
 def run_c45(X_train, X_test, y_train, y_test, params):
     """
-    C4.5 Decision Tree classification
+    C4.5 Decision Tree Classification
+    
+    Training Phase:
+    1. At each node, compute Gain Ratio for each attribute:
+       - Total Entropy
+       - Information Gain per attribute
+       - Split Information
+       - Gain Ratio = Information Gain / Split Information
+    2. Select attribute with maximum Gain Ratio as root/split node
+    3. Split dataset based on attribute values
+    4. For each subset:
+       - If pure (all instances one class): create leaf
+       - Otherwise: repeat recursively
+    
+    Classification Phase:
+    1. Start from root
+    2. At each node: follow branch matching instance's attribute value
+    3. Continue until reaching a leaf
+    4. Leaf indicates predicted class
     """
     max_depth = params.get('max_depth', 10)
     

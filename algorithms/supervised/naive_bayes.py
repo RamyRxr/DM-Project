@@ -43,8 +43,24 @@ def calculate_metrics(y_true, y_pred):
 @st.cache_data
 def run_naive_bayes(X_train, X_test, y_train, y_test, params):
     """
-    Naive Bayes classification (Gaussian Naive Bayes)
-    P(class|features) = P(features|class) * P(class) / P(features)
+    Naïve Bayes Classification (Gaussian for continuous attributes)
+    
+    Training Phase - Compute two types of probabilities:
+    
+    1. Prior Probability (A Priori):
+       P(Ck) = Number of instances of class Ck / Total number of instances
+    
+    2. Conditional Probabilities (Likelihoods):
+       P(xi | Ck) = Probability that attribute xi takes a value given class Ck
+       For continuous attributes: Use Gaussian distribution
+    
+    Prediction Phase:
+    For each class Ck, compute:
+       Posterior ∝ P(Ck) × ∏ P(xi | Ck)  [for all attributes i]
+    
+    Predicted Class = argmax_Ck (P(Ck) × ∏ P(xi | Ck))
+    
+    Key Assumption: Conditional independence between attributes
     """
     # Ensure integer types for classification
     y_train_int = y_train.astype(int)
@@ -53,12 +69,15 @@ def run_naive_bayes(X_train, X_test, y_train, y_test, params):
     classes = np.unique(y_train_int)
     n_features = X_train.shape[1]
     
-    # Calculate prior probabilities P(class)
+    # Calculate prior probabilities P(Ck)
+    # P(Ck) = Number of instances of class Ck / Total number of instances
     priors = {}
     for cls in classes:
         priors[cls] = np.sum(y_train_int == cls) / len(y_train_int)
     
-    # Calculate mean and std for each feature per class
+    # Calculate conditional probabilities P(xi | Ck) for each feature
+    # For continuous attributes: use Gaussian distribution
+    # Store mean and std for each class and feature
     means = {}
     stds = {}
     for cls in classes:
@@ -66,25 +85,26 @@ def run_naive_bayes(X_train, X_test, y_train, y_test, params):
         means[cls] = X_cls.mean(axis=0).values
         stds[cls] = X_cls.std(axis=0).values + 1e-6  # Add small value to avoid division by zero
     
-    # Predict function for Naive Bayes
+    # Prediction function: Predicted Class = argmax_Ck (P(Ck) × ∏ P(xi | Ck))
     def predict_naive_bayes(x):
         posteriors = {}
         
         for cls in classes:
-            # Start with prior
+            # Start with prior probability: P(Ck)
             posterior = np.log(priors[cls])
             
-            # Add log likelihood for each feature (Gaussian)
+            # Multiply by conditional probabilities: ∏ P(xi | Ck)
+            # Using log: log(P(Ck)) + ∑ log(P(xi | Ck))
             for i in range(n_features):
                 mean = means[cls][i]
                 std = stds[cls][i]
-                # Gaussian probability density
+                # Gaussian probability density function for P(xi | Ck)
                 likelihood = -0.5 * np.log(2 * np.pi * std**2) - ((x[i] - mean)**2) / (2 * std**2)
                 posterior += likelihood
             
             posteriors[cls] = posterior
         
-        # Return class with highest posterior
+        # Select class that maximizes the product (argmax)
         return max(posteriors, key=posteriors.get)
     
     # Make predictions

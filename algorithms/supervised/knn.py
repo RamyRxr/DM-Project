@@ -6,39 +6,56 @@ import plotly.graph_objects as go
 from sklearn.metrics import confusion_matrix
 
 
-def euclidean_distance(x1, x2):
-    """Calculate Euclidean distance between two points"""
-    return np.sqrt(np.sum((x1 - x2) ** 2))
+def euclidean_distance(point1, point2):
+    """
+    Calculate Euclidean distance between two points
+    Formula: d = sqrt((x-a)^2 + (y-b)^2 + ...)
+    """
+    return np.sqrt(np.sum((point1 - point2) ** 2))
 
 
 def knn_predict(X_train, y_train, x_test, k):
     """
     Predict class for a single test instance using k-NN
+    
+    Steps:
+    1. Compute distances between x_test and all training points
+    2. Select k nearest neighbors (smallest distances)
+    3. Identify classes of these k neighbors
+    4. Majority vote: assign most frequent class
     """
-    # Calculate distances to all training samples
+    # Step 1: Calculate distances to all training samples
     distances = []
     for i in range(len(X_train)):
         dist = euclidean_distance(X_train.iloc[i].values, x_test.values)
         distances.append((dist, y_train.iloc[i]))
     
-    # Sort by distance and get k nearest neighbors
+    # Step 2: Sort by distance and get k nearest neighbors
     distances.sort(key=lambda x: x[0])
     k_nearest = distances[:k]
     
-    # Get labels of k nearest neighbors
+    # Step 3: Get labels of k nearest neighbors
     k_nearest_labels = [label for _, label in k_nearest]
     
-    # Return most common label (majority vote)
+    # Step 4: Majority vote - return most common label
     unique_labels, counts = np.unique(k_nearest_labels, return_counts=True)
     return unique_labels[np.argmax(counts)]
 
 
 def calculate_metrics(y_true, y_pred):
     """
-    Calculate precision, recall, F-measure, and accuracy
+    Calculate classification metrics: Precision, Recall, F-Measure, and Accuracy
+    
+    For each class:
+    - Precision = TP / (TP + FP)
+    - Recall = TP / (TP + FN)
+    - F-Measure = 2 * (Precision * Recall) / (Precision + Recall)
+    
+    Overall:
+    - Accuracy = Correct Predictions / Total Predictions
     """
     # Get unique classes
-    classes = np.unique(y_true)
+    classes = np.unique(np.concatenate([y_true, y_pred]))
     
     # Initialize metrics
     precision_per_class = {}
@@ -47,9 +64,13 @@ def calculate_metrics(y_true, y_pred):
     
     # Calculate for each class
     for cls in classes:
-        # True Positives, False Positives, False Negatives
+        # True Positives: Predicted as cls AND actually cls
         tp = np.sum((y_true == cls) & (y_pred == cls))
+        
+        # False Positives: Predicted as cls BUT actually NOT cls
         fp = np.sum((y_true != cls) & (y_pred == cls))
+        
+        # False Negatives: Predicted as NOT cls BUT actually cls
         fn = np.sum((y_true == cls) & (y_pred != cls))
         
         # Precision = TP / (TP + FP)
@@ -64,12 +85,12 @@ def calculate_metrics(y_true, y_pred):
         f_measure = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
         f_measure_per_class[cls] = f_measure
     
-    # Calculate averages (macro average)
+    # Calculate macro averages (average across all classes)
     avg_precision = np.mean(list(precision_per_class.values()))
     avg_recall = np.mean(list(recall_per_class.values()))
     avg_f_measure = np.mean(list(f_measure_per_class.values()))
     
-    # Accuracy
+    # Accuracy: Total correct predictions / Total predictions
     accuracy = np.sum(y_true == y_pred) / len(y_true)
     
     return {
