@@ -78,6 +78,23 @@ Your browser should automatically open to:
 ```
 http://localhost:8501
 ```
+## 🌌 Preview Images of the App
+
+<img width="1918" height="962" alt="1" src="https://github.com/user-attachments/assets/d6126078-1565-4609-8a6f-c3a532dccd25" />
+<img width="1918" height="963" alt="2" src="https://github.com/user-attachments/assets/d2f3242b-4fc3-421d-b976-cb5c3b15399d" />
+<img width="1918" height="962" alt="3" src="https://github.com/user-attachments/assets/5f61941d-437f-4d13-bf79-79bf9995b954" />
+<img width="1918" height="967" alt="4" src="https://github.com/user-attachments/assets/8cf1f312-4f5a-4a61-91f8-5fe30a407380" />
+<img width="1918" height="965" alt="5" src="https://github.com/user-attachments/assets/b85b395d-570a-4d5b-83a8-385ed48e78b2" />
+<img width="1918" height="966" alt="6" src="https://github.com/user-attachments/assets/bf3b127c-7e89-4935-9d7f-2d9f4a913501" />
+<img width="1916" height="927" alt="7" src="https://github.com/user-attachments/assets/9429597f-aa35-4ac4-b527-0acee638550a" />
+<img width="1918" height="957" alt="8" src="https://github.com/user-attachments/assets/815469b6-e112-435d-97d7-0af5fa6524bb" />
+<img width="1918" height="962" alt="9" src="https://github.com/user-attachments/assets/217e6789-7170-4e05-8845-847cb82433c0" />
+<img width="1918" height="958" alt="10" src="https://github.com/user-attachments/assets/5c7bccfb-b79a-4a42-a609-b18029acabf4" />
+<img width="1915" height="961" alt="11" src="https://github.com/user-attachments/assets/3584994a-24bb-489f-9210-79d1d4404493" />
+<img width="1911" height="945" alt="12" src="https://github.com/user-attachments/assets/f0571bfc-9ea7-48d1-8ba8-3583d9153bdb" />
+<img width="1916" height="960" alt="13" src="https://github.com/user-attachments/assets/22c3c7ab-5ad5-4142-8762-81c827a979f5" />
+<img width="1917" height="961" alt="14" src="https://github.com/user-attachments/assets/11a82cb8-fb0f-4ee2-95d4-71b3fdc75e86" />
+<img width="1917" height="965" alt="15" src="https://github.com/user-attachments/assets/2df88bc4-bb12-4833-bbbe-e6774282a039" />
 
 ---
 
@@ -437,18 +454,4 @@ For issues or questions about the application:
 
 **✨ Enjoy exploring your data with rigorous, academically-compliant algorithms!**
 
-<img width="1918" height="962" alt="1" src="https://github.com/user-attachments/assets/d6126078-1565-4609-8a6f-c3a532dccd25" />
-<img width="1918" height="963" alt="2" src="https://github.com/user-attachments/assets/d2f3242b-4fc3-421d-b976-cb5c3b15399d" />
-<img width="1918" height="962" alt="3" src="https://github.com/user-attachments/assets/5f61941d-437f-4d13-bf79-79bf9995b954" />
-<img width="1918" height="967" alt="4" src="https://github.com/user-attachments/assets/8cf1f312-4f5a-4a61-91f8-5fe30a407380" />
-<img width="1918" height="965" alt="5" src="https://github.com/user-attachments/assets/b85b395d-570a-4d5b-83a8-385ed48e78b2" />
-<img width="1918" height="966" alt="6" src="https://github.com/user-attachments/assets/bf3b127c-7e89-4935-9d7f-2d9f4a913501" />
-<img width="1916" height="927" alt="7" src="https://github.com/user-attachments/assets/9429597f-aa35-4ac4-b527-0acee638550a" />
-<img width="1918" height="957" alt="8" src="https://github.com/user-attachments/assets/815469b6-e112-435d-97d7-0af5fa6524bb" />
-<img width="1918" height="962" alt="9" src="https://github.com/user-attachments/assets/217e6789-7170-4e05-8845-847cb82433c0" />
-<img width="1918" height="958" alt="10" src="https://github.com/user-attachments/assets/5c7bccfb-b79a-4a42-a609-b18029acabf4" />
-<img width="1915" height="961" alt="11" src="https://github.com/user-attachments/assets/3584994a-24bb-489f-9210-79d1d4404493" />
-<img width="1911" height="945" alt="12" src="https://github.com/user-attachments/assets/f0571bfc-9ea7-48d1-8ba8-3583d9153bdb" />
-<img width="1916" height="960" alt="13" src="https://github.com/user-attachments/assets/22c3c7ab-5ad5-4142-8762-81c827a979f5" />
-<img width="1917" height="961" alt="14" src="https://github.com/user-attachments/assets/11a82cb8-fb0f-4ee2-95d4-71b3fdc75e86" />
-<img width="1917" height="965" alt="15" src="https://github.com/user-attachments/assets/2df88bc4-bb12-4833-bbbe-e6774282a039" />
+
