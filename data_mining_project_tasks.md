@@ -233,14 +233,26 @@
 - [x] **Generate confusion matrix** → Display predictions vs actual
 - [x] **Display confusion matrix heatmap** → Plotly visualization
 
+### SVM (Support Vector Machine)
+- [x] **Implement SVM classifier** → Maximum margin hyperplane for classification
+- [x] **Kernel functions** → Support for linear, RBF, and polynomial kernels
+- [x] **Regularization parameter C** → Control margin vs misclassification trade-off
+- [x] **Train SVM model** → Find optimal hyperplane and support vectors
+- [x] **Test model and compute metrics** → Precision, Recall, F-Measure, Accuracy
+- [x] **Generate confusion matrix** → Display predictions vs actual
+- [x] **Display confusion matrix heatmap** → Plotly visualization
+- [x] **Support vector visualization** → Bar chart showing support vectors per class
+- [x] **Hyperparameter configuration** → UI controls for kernel type and C parameter
+
 ### Algorithm Comparison
-- [x] **"Select all" option** → Run all three algorithms with default parameters
+- [x] **"Select all" option** → Run all four algorithms with default parameters
 - [x] **Collect metrics for each algorithm** → Store Accuracy, Precision, Recall, F-Measure
 - [x] **Create comparison table** → Display all metrics side-by-side with formatting
 - [x] **Compute composite score** → Average of all four metrics
 - [x] **Display best algorithm recommendation** → Algorithm with highest composite score
 - [x] **Show ranking of all algorithms** → Sorted table by composite score
 - [x] **Add metrics explanation** → Collapsible expander explaining Accuracy, Precision, Recall, F-Measure, Composite Score
+- [x] **Individual visualizations for all algorithms** → Display confusion matrices and plots for each algorithm in comparison mode
 
 ### Data Type Handling & Bug Fixes
 - [x] **Fix classification type errors** → Convert y_train and y_test to int type

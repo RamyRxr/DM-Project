@@ -210,6 +210,17 @@ def render_supervised_interface():
                 st.info("ℹ️ Naive Bayes has no hyperparameters")
             elif algorithm_name == "C4.5":
                 st.info("ℹ️ C4.5 decision tree implementation")
+            elif algorithm_name == "SVM":
+                params['kernel'] = st.selectbox(
+                    "Kernel function",
+                    ["rbf", "linear", "poly"],
+                    help="RBF for non-linear, Linear for linearly separable data"
+                )
+                params['C'] = st.slider(
+                    "C (Regularization)",
+                    0.1, 10.0, 1.0, 0.1,
+                    help="Smaller C = wider margin, larger C = stricter margin"
+                )
         else:
             st.info("🔄 All algorithms will run with default/optimal parameters")
             params = None

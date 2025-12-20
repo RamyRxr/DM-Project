@@ -165,10 +165,13 @@ Train classifiers to predict target classes:
   - Gaussian distribution for continuous attributes
 - **C4.5 Decision Tree:** Tree-based classifier using Gain Ratio
   - Automatically builds tree with optimal splits
+- **SVM (Support Vector Machine):** Maximum margin classifier
+  - Configure kernel (linear, RBF, polynomial)
+  - Adjust C parameter (regularization)
 
 #### Run & Compare
 - **Single Algorithm:** Train one classifier with specific parameters
-- **Select All:** Compare all three classifiers automatically
+- **Select All:** Compare all four classifiers automatically
 
 #### View Results
 - Evaluation metrics: Accuracy, Precision, Recall, F-Measure
@@ -203,7 +206,8 @@ DM-Project/
         ├── interface.py                # Supervised learning UI
         ├── knn.py                      # k-Nearest Neighbors
         ├── naive_bayes.py              # Gaussian Naive Bayes
-        └── c45.py                      # C4.5 Decision Tree
+        ├── c45.py                      # C4.5 Decision Tree
+        └── svm.py                      # Support Vector Machine
 ```
 
 ---
@@ -277,6 +281,23 @@ DM-Project/
   - Traverse tree from root to leaf
   - Follow branches based on attribute values
 - **Metrics:** Accuracy, Precision, Recall, F-Measure, Confusion matrix
+
+#### 4. **Support Vector Machine (SVM)**
+- **Key Concepts:**
+  - Find optimal hyperplane that maximizes margin between classes
+  - Support Vectors: Data points closest to decision boundary
+  - Kernel functions: Transform data to higher dimensions for non-linear separation
+- **Training Phase:**
+  - Apply kernel transformation (linear, RBF, or polynomial)
+  - Optimize hyperplane to maximize margin
+  - Identify support vectors (critical training points)
+- **Prediction Phase:**
+  - Determine which side of hyperplane test point falls on
+  - Assign class based on hyperplane decision
+- **Parameters:**
+  - **Kernel:** Type of kernel function (linear, RBF, poly)
+  - **C:** Regularization parameter (controls margin vs misclassification trade-off)
+- **Metrics:** Accuracy, Precision, Recall, F-Measure, Confusion matrix, Support vector counts
 
 ---
 
