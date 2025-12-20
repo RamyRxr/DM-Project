@@ -368,6 +368,47 @@ def render_supervised_interface():
                 - Overall performance indicator combining all measurements
                 - Used to recommend the best-performing algorithm
                 """)
+        
+        # Display individual algorithm visualizations
+        st.divider()
+        st.header("📈 Individual Algorithm Visualizations")
+        
+        all_results = comp_data['all_results']
+        
+        for alg_name in sorted(all_results.keys()):
+            results = all_results[alg_name]
+            
+            st.subheader(f"🔍 {alg_name}")
+            
+            # Results contain: predictions, metrics, confusion_matrix, figures
+            if len(results) >= 2:
+                predictions = results[0] if len(results) > 0 else None
+                metrics = results[1] if len(results) > 1 else {}
+                confusion_matrix_data = results[2] if len(results) > 2 else None
+                figures = results[3] if len(results) > 3 else {}
+                
+                # Display metrics
+                if metrics:
+                    st.write("##### Evaluation Metrics")
+                    cols = st.columns(len(metrics))
+                    for i, (metric_name, metric_value) in enumerate(metrics.items()):
+                        if isinstance(metric_value, (int, float)):
+                            cols[i].metric(metric_name, f"{metric_value:.4f}")
+                        else:
+                            cols[i].metric(metric_name, metric_value)
+                
+                # Display confusion matrix
+                if confusion_matrix_data is not None:
+                    st.write("##### Confusion Matrix")
+                    st.dataframe(confusion_matrix_data, use_container_width=True)
+                
+                # Display figures
+                if figures:
+                    for fig_name, fig in figures.items():
+                        st.write(f"##### {fig_name}")
+                        st.plotly_chart(fig, use_container_width=True, key=f"supervised_all_{alg_name}_{fig_name}")
+                
+                st.divider()
     
     elif 'supervised_results' in st.session_state and st.session_state.supervised_results:
         st.divider()

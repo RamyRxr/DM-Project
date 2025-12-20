@@ -260,6 +260,10 @@ def render_unsupervised_interface():
         
         scores = {}
         for alg_name, metrics in all_metrics.items():
+            # Skip if metrics is None or empty
+            if not metrics or metrics is None:
+                continue
+                
             score = 0
             count = 0
             
