@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import sys
 sys.path.append('algorithms')
 from algorithms.unsupervised.interface import render_unsupervised_interface
+from algorithms.supervised.interface import render_supervised_interface
 
 # ===========================
 # CONFIGURATION
@@ -1297,5 +1298,4 @@ elif st.session_state.section == "🔍 Unsupervised Learning":
 # ===========================
 
 elif st.session_state.section == "🎯 Supervised Learning":
-    st.header("🎯 Phase 8: Supervised Learning")
-    st.info("⏳ Supervised learning algorithms will be implemented in the next phase")
+    render_supervised_interface()
