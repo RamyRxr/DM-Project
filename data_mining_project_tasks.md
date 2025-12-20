@@ -118,35 +118,70 @@
 ## 🔍 PHASE 9 – UNSUPERVISED LEARNING
 **Objective:** Discover hidden clusters using algorithms implemented from scratch.
 
-- [ ] **Create algorithm selection menu**
-- [ ] **Create parameter input controls**
-- [ ] **Add execute button**
+- [x] **Create algorithm selection menu** → Dynamic loading from algorithms/unsupervised/ folder
+- [x] **Create parameter input controls** → Dynamic parameters based on selected algorithm
+- [x] **Add execute button** → "Run Clustering" button with proper state management
+- [x] **Add "Select all" option** → Run and compare all algorithms at once
+
+### Interface Features
+
+- [x] **Display cleaned data table** → Show current data before clustering
+- [x] **Feature selection for 2D visualization** → X-axis and Y-axis dropdowns with Apply button
+- [x] **2D scatter plot preview** → Display selected features before running algorithm
+- [x] **2-column layout** → Algorithm selection | Parameter configuration
+- [x] **Session state management** → Persist selected features and results across reruns
+- [x] **Dynamic algorithm loading** → Use importlib to scan and load algorithm modules
 
 ### Algorithms
 
-- [ ] **Implement K‑Means from scratch** → Include centroid update, convergence condition.
-- [ ] **Implement K‑Medoids from scratch**
-- [ ] **Implement AGNES** → Single, complete, average linkage.
-- [ ] **Implement DIANA** → Recursive divisive clustering.
-- [ ] **Implement DBSCAN** → eps, MinPts, noise detection.
+- [x] **Implement K‑Means from scratch** → Include centroid update, convergence condition, manual implementation
+- [x] **Implement K‑Medoids from scratch** → PAM algorithm with medoid updates
+- [x] **Implement AGNES** → Single, complete, average, ward linkage options
+- [x] **Implement DIANA** → Recursive divisive clustering
+- [x] **Implement DBSCAN** → eps, MinPts, noise detection, core/border/noise points
 
-- [ ] **Add 2D cluster visualization**
-- [ ] **Add 3D cluster visualization**
-- [ ] **Display centroid positions (when applicable)**
-- [ ] **Display elbow method graph (K‑Means)**
-- [ ] **Display dendrograms (AGNES & DIANA)**
-- [ ] **Add cluster label column to dataset**
-- [ ] **Compute inertia and silhouette score**
+### Visualizations
+
+- [x] **Add 2D cluster visualization** → Scatter plots with cluster colors
+- [x] **Add 3D cluster visualization** → 3D scatter plots when sufficient numeric columns available
+- [x] **Display centroid/medoid positions** → Markers on 2D and 3D plots for K-Means/K-Medoids
+- [x] **Display elbow method graph** → Automatic k-range testing (k=2 to k=10) for K-Means & K-Medoids
+- [x] **Detect and display optimal k** → Derivative-based elbow detection with recommendation
+- [x] **Display dendrograms** → Hierarchical tree visualization for AGNES & DIANA
+- [x] **Add cluster label column to dataset** → Cluster assignments added to dataframe
+- [x] **Cluster distribution histograms** → Show count of points per cluster
+
+### Metrics & Evaluation
+
+- [x] **Compute Silhouette Score** → Measure cluster separation quality
+- [x] **Compute Davies-Bouldin Index** → Evaluate cluster compactness and separation
+- [x] **Compute Calinski-Harabasz Index** → Variance ratio criterion
+- [x] **Compute Inertia/WCSS** → Within-cluster sum of squares for K-Means/K-Medoids
+- [x] **Handle DBSCAN noise points** → Separate metrics for clustered points (excluding noise)
+- [x] **Display metrics in card format** → Clean presentation with st.metric()
+
+### Algorithm Comparison (Extra Feature)
+
+- [x] **Run all algorithms with optimal parameters** → Automatic execution with k=3 default
+- [x] **Collect and display histograms** → 3-column grid showing all cluster distributions
+- [x] **Create comparison table** → Side-by-side metrics for all algorithms
+- [x] **Compute composite score** → Weighted combination of all metrics
+- [x] **Algorithm recommendation** → Automatic best algorithm selection based on scores
+- [x] **Score ranking display** → Show all algorithms ranked by performance
+- [x] **Metrics explanation** → Info expander with detailed metric descriptions
 
 ---
 
 ## 📈 PHASE 10 – UNSUPERVISED COMPARISON
 **Objective:** Identify the best clustering algorithm.
 
-- [ ] **Run all algorithms automatically**
-- [ ] **Collect metrics for each algorithm**
-- [ ] **Create comparison table** → Algorithm, parameters, metrics.
-- [ ] **Create histogram comparing inertias**
+- [x] **Run all algorithms automatically** → "Select all" option in algorithm dropdown
+- [x] **Collect metrics for each algorithm** → Silhouette, Davies-Bouldin, Calinski-Harabasz
+- [x] **Create comparison table** → Algorithm, all metrics side-by-side with formatting
+- [x] **Create histogram grid** → Display cluster distributions for all algorithms
+- [x] **Compute composite score** → Normalized weighted scoring system
+- [x] **Display best algorithm recommendation** → Automatic selection with reasoning
+- [x] **Show ranking of all algorithms** → Sorted by composite score
 
 ---
 
