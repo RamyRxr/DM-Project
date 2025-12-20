@@ -340,6 +340,34 @@ def render_supervised_interface():
             score_df = score_df.sort_values('Composite Score', ascending=False)
             score_df['Composite Score'] = score_df['Composite Score'].apply(lambda x: f"{x:.4f}")
             st.dataframe(score_df, use_container_width=True, hide_index=True)
+            
+            # Add metrics explanation
+            with st.expander("ℹ️ Understanding the Metrics"):
+                st.markdown("""
+                **Accuracy** (0 to 1, higher is better):
+                - Proportion of correct predictions out of total predictions
+                - Formula: (TP + TN) / (TP + TN + FP + FN)
+                
+                **Precision** (0 to 1, higher is better):
+                - Proportion of true positive predictions out of all positive predictions
+                - Formula: TP / (TP + FP)
+                - Answers: "Of all instances predicted as positive, how many were actually positive?"
+                
+                **Recall** (0 to 1, higher is better):
+                - Proportion of true positive predictions out of all actual positives
+                - Formula: TP / (TP + FN)
+                - Answers: "Of all actual positive instances, how many did we correctly identify?"
+                
+                **F-Measure** (0 to 1, higher is better):
+                - Harmonic mean of Precision and Recall
+                - Formula: 2 × (Precision × Recall) / (Precision + Recall)
+                - Balances Precision and Recall into a single metric
+                
+                **Composite Score**:
+                - Average of all metrics (Accuracy + Precision + Recall + F-Measure) / 4
+                - Overall performance indicator combining all measurements
+                - Used to recommend the best-performing algorithm
+                """)
     
     elif 'supervised_results' in st.session_state and st.session_state.supervised_results:
         st.divider()
