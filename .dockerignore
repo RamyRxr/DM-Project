@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.python-version
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Docs & assets not needed at runtime
+README.md
+data_mining_project_tasks.md
+images/

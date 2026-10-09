@@ -1,204 +1,191 @@
-# 📊 Data Mining Application
+<div align="center">
 
-A comprehensive, academically rigorous data mining application built with Streamlit that implements clustering and classification algorithms from scratch, strictly following academic course material.
+# Data Mining Application
 
-<img width="1115" height="882" alt="DM" src="https://github.com/user-attachments/assets/f0bb269d-9a0e-4a1c-975f-68676b8f6901" />
+**An end-to-end, interactive data mining workbench — clustering and classification algorithms implemented from scratch, powered by Streamlit.**
 
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code style](https://img.shields.io/badge/algos-from%20scratch-success)](#-algorithms-implemented-from-scratch)
+
+<img src="images/DM.png" alt="Data Mining Application" width="820">
+
+</div>
 
 ---
 
-## 🚀 Quick Start Guide
+## 📌 Overview
+
+This project is a complete **data mining pipeline in a single web app**. It walks you from raw CSV to trained model through a guided, phase-by-phase workflow: load → clean → explore → normalize → cluster → classify.
+
+Rather than calling a black-box library, every core algorithm (K-Means, K-Medoids, AGNES, DIANA, DBSCAN, k-NN, Naive Bayes, C4.5, and SVM) is **implemented from scratch** with NumPy and Pandas. The UI lets you tune parameters, run algorithms side by side, compare them with standard evaluation metrics, and get an automatic "best algorithm" recommendation.
+
+> Built as a Data Mining course project with strict academic grounding — every formula follows the course material.
+
+---
+
+## ✨ Highlights
+
+- 🧩 **9 algorithms from scratch** — 5 clustering + 4 classification, no `sklearn` estimators.
+- 🎛️ **Interactive configuration** — tune `k`, linkage, `eps`/`MinPts`, kernels, `C`, and more.
+- ⚖️ **Compare mode** — run all algorithms at once and rank them with a composite score.
+- 📊 **Rich visualizations** — 2D/3D cluster plots, elbow curves, dendrograms, confusion-matrix heatmaps, and more.
+- 🧪 **Full preprocessing toolkit** — duplicates, missing values, outliers, typing, and min–max / z-score normalization.
+- 🐳 **One-command startup** with Docker or Docker Compose.
+
+---
+
+## 🖼️ Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="images/1.png" alt="Screenshot 1"></td>
+    <td width="50%"><img src="images/2.png" alt="Screenshot 2"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/3.png" alt="Screenshot 3"></td>
+    <td width="50%"><img src="images/4.png" alt="Screenshot 4"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/5.png" alt="Screenshot 5"></td>
+    <td width="50%"><img src="images/6.png" alt="Screenshot 6"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/7.png" alt="Screenshot 7"></td>
+    <td width="50%"><img src="images/8.png" alt="Screenshot 8"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/9.png" alt="Screenshot 9"></td>
+    <td width="50%"><img src="images/10.png" alt="Screenshot 10"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/11.png" alt="Screenshot 11"></td>
+    <td width="50%"><img src="images/12.png" alt="Screenshot 12"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/13.png" alt="Screenshot 13"></td>
+    <td width="50%"><img src="images/14.png" alt="Screenshot 14"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/15.png" alt="Screenshot 15"></td>
+    <td width="50%"></td>
+  </tr>
+</table>
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-Before installing, make sure you have one of the following:
+- **Docker** (recommended), or
+- **Python 3.9+**
 
-- **Option 1:** Docker installed on your system
-- **Option 2:** Python 3.9+ installed
-
----
-
-## 📥 Installation & Usage
-
-### Step 0: Clone the Repository (Required for Both Options)
-
-First, clone the repository to your local machine:
+### Option 1 — Docker (recommended)
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/RamyRxr/DM-Project.git
 cd DM-Project
-```
-
----
-
-### Option 1: Using Docker (Recommended)
-
-Docker ensures the application runs consistently across all systems without dependency issues.
-
-#### Step 1: Build the Docker Image
-
-```bash
 docker build -t data-mining-app .
-```
-
-#### Step 2: Run the Container
-
-```bash
 docker run -p 8501:8501 data-mining-app
 ```
 
-#### Step 3: Access the Application
+Open **http://localhost:8501**.
 
-Open your browser and navigate to:
-```
-http://localhost:8501
-```
-
----
-
-### Option 2: Using Python Directly
-
-If you prefer running without Docker:
-
-#### Step 1: Install Dependencies
+### Option 2 — Docker Compose
 
 ```bash
+git clone https://github.com/RamyRxr/DM-Project.git
+cd DM-Project
+docker compose up --build
+```
+
+### Option 3 — Run locally with Python
+
+```bash
+git clone https://github.com/RamyRxr/DM-Project.git
+cd DM-Project
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-#### Step 2: Run the Application
-
-```bash
 streamlit run app.py
 ```
 
-#### Step 3: Access the Application
-
-Your browser should automatically open to:
-```
-http://localhost:8501
-```
-## 🌌 Preview Images of the App
-
-<img width="1918" height="962" alt="1" src="https://github.com/user-attachments/assets/d6126078-1565-4609-8a6f-c3a532dccd25" />
-<img width="1918" height="963" alt="2" src="https://github.com/user-attachments/assets/d2f3242b-4fc3-421d-b976-cb5c3b15399d" />
-<img width="1918" height="962" alt="3" src="https://github.com/user-attachments/assets/5f61941d-437f-4d13-bf79-79bf9995b954" />
-<img width="1918" height="967" alt="4" src="https://github.com/user-attachments/assets/8cf1f312-4f5a-4a61-91f8-5fe30a407380" />
-<img width="1918" height="965" alt="5" src="https://github.com/user-attachments/assets/b85b395d-570a-4d5b-83a8-385ed48e78b2" />
-<img width="1918" height="966" alt="6" src="https://github.com/user-attachments/assets/bf3b127c-7e89-4935-9d7f-2d9f4a913501" />
-<img width="1916" height="927" alt="7" src="https://github.com/user-attachments/assets/9429597f-aa35-4ac4-b527-0acee638550a" />
-<img width="1918" height="957" alt="8" src="https://github.com/user-attachments/assets/815469b6-e112-435d-97d7-0af5fa6524bb" />
-<img width="1918" height="962" alt="9" src="https://github.com/user-attachments/assets/217e6789-7170-4e05-8845-847cb82433c0" />
-<img width="1918" height="958" alt="10" src="https://github.com/user-attachments/assets/5c7bccfb-b79a-4a42-a609-b18029acabf4" />
-<img width="1915" height="961" alt="11" src="https://github.com/user-attachments/assets/3584994a-24bb-489f-9210-79d1d4404493" />
-<img width="1911" height="945" alt="12" src="https://github.com/user-attachments/assets/f0571bfc-9ea7-48d1-8ba8-3583d9153bdb" />
-<img width="1916" height="960" alt="13" src="https://github.com/user-attachments/assets/22c3c7ab-5ad5-4142-8762-81c827a979f5" />
-<img width="1917" height="961" alt="14" src="https://github.com/user-attachments/assets/11a82cb8-fb0f-4ee2-95d4-71b3fdc75e86" />
-<img width="1917" height="965" alt="15" src="https://github.com/user-attachments/assets/2df88bc4-bb12-4833-bbbe-e6774282a039" />
+The app opens at **http://localhost:8501**.
 
 ---
 
-## 📖 How to Use the Application
+## 🧭 How It Works
 
-### 1. **Data Loading**
-- Click **"Browse files"** in the sidebar
-- Upload a **CSV file** containing your dataset
-- The application will display your data with dimensions and column information
+The app is organized into a guided workflow. **Data Cleaning** (Phases 1–6) must be completed before the machine-learning sections unlock.
 
-### 2. **Data Cleaning** (Phase 4)
-Navigate through the data cleaning workflow:
+### 🧹 Data Cleaning & Preparation (Phases 1–6)
 
-- **Duplicates:** Detect and remove duplicate rows
-- **Missing Values:** 
-  - View missing data summary
-  - Use "Auto Clean Data" to convert non-standard values to NaN
-  - Add custom missing indicators (e.g., "?", "N/A", "missing")
-  - Choose handling method: Drop rows, Fill with 0/Mean/Median, Forward/Backward fill
-- **Column Management:** Delete unnecessary columns
+| Phase | What it does |
+| :---: | --- |
+| **1 · Data Loading** | Upload a CSV, inspect dimensions, columns, and dtypes. |
+| **2 · Cleaning & Quality** | Detect/remove duplicates; handle missing values (auto-clean, custom indicators, drop, fill 0/mean/median, forward/backward fill); drop columns. |
+| **3 · Outlier Detection** | Per-column boxplots, outlier summary, and choose to remove, cap, or keep outliers. |
+| **4 · Exploration** | Descriptive statistics (min, max, mean, median, mode, Q1, Q3) and scatter plots. |
+| **5 · Data Typing** | Detect float columns that represent integers and safely convert them. |
+| **6 · Normalization** | Min–Max scaling, Z-score standardization, or skip. Numeric columns only. |
 
-### 3. **Outlier Detection** (Phase 5)
-- View boxplots for each numeric column
-- Identify extreme values visually
-- Choose to remove or keep outliers
+### 🔍 Unsupervised Learning — Clustering
 
-### 4. **Data Exploration** (Phase 6)
-- View descriptive statistics: Min, Max, Mean, Median, Mode, Q1, Q3
-- Generate scatter plots to visualize relationships between attributes
+- **Feature selection** for 2D/3D visualization with a live preview.
+- **Single run** with algorithm-specific parameters, or **Select all** to compare every algorithm.
+- Visuals: 2D & 3D cluster scatter plots, centroid/medoid markers, elbow curves with optimal-`k` detection, cluster histograms, and dendrograms.
 
-### 5. **Data Typing** (Phase 7)
-- Automatically detect float columns that represent integers
-- Convert them to proper integer types
+### 🎯 Supervised Learning — Classification
 
-### 6. **Normalization** (Phase 8)
-Choose your normalization strategy:
-- **Min-Max Normalization:** Scales values to [0, 1]
-- **Z-Score Standardization:** Centers data with mean=0, std=1
-- **Skip:** Proceed without normalization
+- **Choose a target column**, inspect class distribution and balance.
+- **Adjustable train/test split** (10–40% test) with per-class sample counts.
+- **Single run** with parameters, or **Select all** to benchmark all four classifiers.
+- Visuals: metrics cards, confusion-matrix tables & heatmaps, k-NN accuracy/precision vs. `k` plots, SVM support-vector counts, and a ranked comparison table with a composite score.
 
-### 7. **Unsupervised Learning** (Phase 9)
-Discover hidden patterns in your data:
+---
 
-#### Select Features
-- Choose X-axis and Y-axis features for 2D visualization
-- Preview data distribution before clustering
+## 🧠 Algorithms Implemented from Scratch
 
-#### Choose Algorithm
-- **K-Means:** Centroid-based clustering with elbow method
-- **K-Medoids (PAM):** Medoid-based clustering, more robust to outliers
-- **AGNES:** Hierarchical agglomerative clustering with dendrogram
-- **DIANA:** Hierarchical divisive clustering
-- **DBSCAN:** Density-based clustering with noise detection
+### Clustering
 
-#### Configure Parameters
-- K-Means/K-Medoids: Number of clusters (k)
-- AGNES: Linkage method (single, complete, average, ward)
-- DBSCAN: eps (neighborhood radius), MinPts (minimum points)
+| Algorithm | Type | Key ideas |
+| --- | --- | --- |
+| **K-Means** | Centroid-based | Iterative centroid updates & convergence; elbow method for `k`. |
+| **K-Medoids (PAM)** | Medoid-based | Robust to outliers; medoid updates; elbow method. |
+| **AGNES** | Agglomerative | Bottom-up; single / complete / average / ward linkage; dendrogram. |
+| **DIANA** | Divisive | Top-down recursive splitting; dendrogram. |
+| **DBSCAN** | Density-based | `eps` / `MinPts`; core, border, and noise point classification. |
 
-#### Run & Compare
-- **Single Algorithm:** Run one algorithm with specific parameters
-- **Select All:** Compare all algorithms automatically with optimal parameters
+### Classification
 
-#### View Results
-- 2D and 3D cluster visualizations
-- Cluster distribution histograms
-- Evaluation metrics: Silhouette Score, Davies-Bouldin Index, Calinski-Harabasz Index
-- Elbow curves (K-Means, K-Medoids)
-- Dendrograms (AGNES, DIANA)
-- Best algorithm recommendation based on composite scores
+| Algorithm | Key ideas |
+| --- | --- |
+| **k-NN** | Euclidean distance, majority vote; the exact 4-step process from the course; evaluated for `k = 1…20`. |
+| **Naive Bayes** | Gaussian likelihood; prior probabilities and posterior `argmax` under conditional independence. |
+| **C4.5** | Entropy, Information Gain, Split Information, and **Gain Ratio** for attribute selection. |
+| **SVM** | Maximum-margin hyperplane; linear / RBF / polynomial kernels; `C` regularization; support vectors. |
 
-### 8. **Supervised Learning** (Phase 11)
-Train classifiers to predict target classes:
+---
 
-#### Select Target Column
-- Choose the column you want to predict (class/label)
-- View class distribution and balance
+## 📊 Evaluation Metrics
 
-#### Split Data
-- Adjust train/test split ratio (default: 80/20)
-- View sample counts per class in both sets
+**Clustering**
 
-#### Choose Algorithm
-- **k-NN (k-Nearest Neighbors):** Distance-based classification
-  - Configure k (number of neighbors, 1-20)
-  - View accuracy and precision across different k values
-- **Naive Bayes:** Probabilistic classifier using Bayes' theorem
-  - Gaussian distribution for continuous attributes
-- **C4.5 Decision Tree:** Tree-based classifier using Gain Ratio
-  - Automatically builds tree with optimal splits
-- **SVM (Support Vector Machine):** Maximum margin classifier
-  - Configure kernel (linear, RBF, polynomial)
-  - Adjust C parameter (regularization)
+- **Silhouette Score** — higher is better (well-separated clusters).
+- **Davies–Bouldin Index** — lower is better.
+- **Calinski–Harabasz Index** — higher is better.
+- **Inertia / WCSS** — within-cluster sum of squares (K-Means / K-Medoids).
+- **Composite Score** — normalized weighted blend used for the recommendation.
 
-#### Run & Compare
-- **Single Algorithm:** Train one classifier with specific parameters
-- **Select All:** Compare all four classifiers automatically
+**Classification**
 
-#### View Results
-- Evaluation metrics: Accuracy, Precision, Recall, F-Measure
-- Confusion matrices (table and heatmap)
-- Performance plots (k-NN: Accuracy vs k, Precision vs k)
-- Best algorithm recommendation
-- Individual visualizations for each algorithm in comparison mode
+- **Accuracy** = (TP + TN) / Total
+- **Precision** = TP / (TP + FP)
+- **Recall** = TP / (TP + FN)
+- **F-Measure** = 2 × (Precision × Recall) / (Precision + Recall)
+- **Composite Score** — average of the four metrics above.
 
 ---
 
@@ -206,252 +193,72 @@ Train classifiers to predict target classes:
 
 ```
 DM-Project/
-├── app.py                              # Main Streamlit application
-├── requirements.txt                    # Python dependencies
-├── Dockerfile                          # Docker configuration
-├── docker-compose.yml                  # Docker Compose setup
-├── data_mining_project_tasks.md        # Detailed project roadmap
-├── README.md                           # This file
+├── app.py                          # Main Streamlit app (preprocessing + routing)
+├── requirements.txt                # Pinned Python dependencies
+├── Dockerfile                      # Container image
+├── docker-compose.yml              # Compose service definition
+├── .dockerignore / .gitignore      # Build & VCS exclusions
+├── LICENSE                         # MIT
+├── data_mining_project_tasks.md    # Full phase-by-phase project roadmap
+├── images/                         # Screenshots used in this README
 │
 └── algorithms/
-    ├── unsupervised/                   # Clustering algorithms
-    │   ├── interface.py                # Unsupervised learning UI
-    │   ├── kmeans.py                   # K-Means implementation
-    │   ├── kmedoids.py                 # K-Medoids (PAM) implementation
-    │   ├── agnes.py                    # AGNES hierarchical clustering
-    │   ├── diana.py                    # DIANA divisive clustering
-    │   └── dbscan.py                   # DBSCAN density-based clustering
+    ├── unsupervised/               # Clustering
+    │   ├── interface.py            # UI + orchestration
+    │   ├── kmeans.py
+    │   ├── kmedoids.py
+    │   ├── agnes.py
+    │   ├── diana.py
+    │   └── dbscan.py
     │
-    └── supervised/                     # Classification algorithms
-        ├── interface.py                # Supervised learning UI
-        ├── knn.py                      # k-Nearest Neighbors
-        ├── naive_bayes.py              # Gaussian Naive Bayes
-        ├── c45.py                      # C4.5 Decision Tree
-        └── svm.py                      # Support Vector Machine
+    └── supervised/                 # Classification
+        ├── interface.py            # UI + orchestration
+        ├── knn.py
+        ├── naive_bayes.py
+        ├── c45.py
+        └── svm.py
 ```
 
 ---
 
-## 🧠 Algorithms Implemented
+## 🛠️ Tech Stack
 
-### Unsupervised Learning (Clustering)
-
-#### 1. **K-Means**
-- Manual centroid initialization and updates
-- Iterative convergence checking
-- Elbow method for optimal k detection
-- **Metrics:** Inertia (WCSS), Silhouette Score, Davies-Bouldin, Calinski-Harabasz
-
-#### 2. **K-Medoids (PAM)**
-- Medoid-based clustering (more robust to outliers)
-- PAM algorithm implementation
-- Elbow method visualization
-- **Metrics:** Same as K-Means
-
-#### 3. **AGNES (Agglomerative Hierarchical)**
-- Bottom-up hierarchical clustering
-- Multiple linkage methods: Single, Complete, Average, Ward
-- Dendrogram visualization
-- **Metrics:** Silhouette Score, Davies-Bouldin, Calinski-Harabasz
-
-#### 4. **DIANA (Divisive Hierarchical)**
-- Top-down hierarchical clustering
-- Recursive splitting strategy
-- Dendrogram visualization
-- **Metrics:** Same as AGNES
-
-#### 5. **DBSCAN**
-- Density-based clustering
-- Automatic noise detection
-- Core, Border, and Noise point classification
-- **Parameters:** eps (neighborhood radius), MinPts (minimum points)
-- **Metrics:** Separate metrics for clustered points and all points
-
-### Supervised Learning (Classification)
-
-#### 1. **k-Nearest Neighbors (k-NN)**
-- **4-Step Process (from class material):**
-  1. Compute Euclidean distances to all training points
-  2. Select k nearest neighbors
-  3. Identify classes of k neighbors
-  4. Majority vote for final prediction
-- Multi-k evaluation (k=1 to k=20)
-- **Visualizations:** Accuracy vs k, Precision vs k, Confusion matrix
-- **Metrics:** Accuracy, Precision, Recall, F-Measure
-
-#### 2. **Naive Bayes (Gaussian)**
-- **Training Phase:**
-  - Prior probabilities: P(Ck) = Count(Ck) / Total
-  - Conditional probabilities: P(xi | Ck) using Gaussian distribution
-- **Prediction Phase:**
-  - Posterior = P(Ck) × ∏ P(xi | Ck)
-  - Predicted class = argmax(Posterior)
-- **Key Assumption:** Conditional independence between attributes
-- **Metrics:** Accuracy, Precision, Recall, F-Measure, Confusion matrix
-
-#### 3. **C4.5 Decision Tree**
-- **Training Phase:**
-  - Calculate entropy for node purity
-  - Compute Information Gain for potential splits
-  - Calculate Split Information
-  - **Gain Ratio = Information Gain / Split Information** (key C4.5 improvement)
-  - Select attribute with maximum Gain Ratio
-  - Recursive tree building with stopping criteria
-- **Prediction Phase:**
-  - Traverse tree from root to leaf
-  - Follow branches based on attribute values
-- **Metrics:** Accuracy, Precision, Recall, F-Measure, Confusion matrix
-
-#### 4. **Support Vector Machine (SVM)**
-- **Key Concepts:**
-  - Find optimal hyperplane that maximizes margin between classes
-  - Support Vectors: Data points closest to decision boundary
-  - Kernel functions: Transform data to higher dimensions for non-linear separation
-- **Training Phase:**
-  - Apply kernel transformation (linear, RBF, or polynomial)
-  - Optimize hyperplane to maximize margin
-  - Identify support vectors (critical training points)
-- **Prediction Phase:**
-  - Determine which side of hyperplane test point falls on
-  - Assign class based on hyperplane decision
-- **Parameters:**
-  - **Kernel:** Type of kernel function (linear, RBF, poly)
-  - **C:** Regularization parameter (controls margin vs misclassification trade-off)
-- **Metrics:** Accuracy, Precision, Recall, F-Measure, Confusion matrix, Support vector counts
+| Layer | Tools |
+| --- | --- |
+| **App / UI** | Streamlit |
+| **Data & math** | Pandas, NumPy |
+| **Visualization** | Plotly |
+| **Utilities** | scikit-learn *(only for `train_test_split`, `confusion_matrix`, and metric helpers)* |
+| **Packaging** | Docker, Docker Compose |
 
 ---
 
-## 📊 Evaluation Metrics
+## 🎓 Academic Compliance
 
-### Clustering Metrics
-
-- **Silhouette Score (0 to 1, higher is better)**
-  - Measures how similar points are to their own cluster vs. other clusters
-  - Values near 1 indicate well-separated clusters
-
-- **Davies-Bouldin Index (0 to ∞, lower is better)**
-  - Measures average similarity between clusters
-  - Lower values indicate better separation
-
-- **Calinski-Harabasz Index (0 to ∞, higher is better)**
-  - Ratio of between-cluster to within-cluster dispersion
-  - Higher values indicate denser, well-separated clusters
-
-- **Composite Score**
-  - Normalized weighted combination of all metrics
-  - Used to recommend the best algorithm
-
-### Classification Metrics
-
-- **Accuracy (0 to 1, higher is better)**
-  - Proportion of correct predictions
-  - Formula: (TP + TN) / Total
-
-- **Precision (0 to 1, higher is better)**
-  - Of all positive predictions, how many were correct
-  - Formula: TP / (TP + FP)
-
-- **Recall (0 to 1, higher is better)**
-  - Of all actual positives, how many were identified
-  - Formula: TP / (TP + FN)
-
-- **F-Measure (0 to 1, higher is better)**
-  - Harmonic mean of Precision and Recall
-  - Formula: 2 × (Precision × Recall) / (Precision + Recall)
-
-- **Composite Score**
-  - Average of Accuracy, Precision, Recall, and F-Measure
-  - Used to recommend the best algorithm
-
----
-
-## 🛠️ Technologies Used
-
-- **Python 3.9+**
-- **Streamlit** - Interactive web application framework
-- **Pandas** - Data manipulation and analysis
-- **NumPy** - Numerical computing
-- **Plotly** - Interactive visualizations
-- **scikit-learn** - Only for confusion matrix and validation metrics
-- **Docker** - Containerization for reproducibility
-
----
-
-## 🎯 Academic Compliance
-
-This application strictly follows academic course material:
-
-### ✅ All Algorithms Implemented from Scratch
-- No use of sklearn's clustering or classification algorithms
-- Manual implementation of distance calculations, centroid/medoid updates, tree building, etc.
-- Only sklearn used for: confusion matrix, train_test_split validation, and metric calculations
-
-### ✅ Exact Formulas from Class Material
-- **k-NN:** 4-step process with Euclidean distance
-- **Naive Bayes:** Prior probabilities, Gaussian likelihood, posterior calculation
-- **C4.5:** Entropy, Information Gain, Split Information, **Gain Ratio** (not just Information Gain)
-- **Clustering:** All distance metrics, linkage methods, and evaluation metrics match course definitions
-
-### ✅ Comprehensive Documentation
-- Code comments explain academic concepts
-- UI includes expandable metric explanations
-- All formulas are documented
+- **Algorithms are hand-implemented.** No `sklearn` clustering or classification estimators are used — only distance math, centroid/medoid updates, tree building, and probability calculations written directly.
+- **Formulas follow the course material** (e.g., C4.5 uses Gain Ratio, not just Information Gain; Naive Bayes uses Gaussian likelihood; k-NN follows the 4-step procedure taught in class).
+- **Transparency.** The UI includes expandable explanations of each algorithm and metric, and `data_mining_project_tasks.md` documents every implementation step.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Application won't start
-- **Docker:** Ensure Docker Desktop is running
-- **Python:** Verify Python version with `python --version` (must be 3.9+)
-- **Dependencies:** Run `pip install -r requirements.txt` again
-
-### Port already in use
-- **Change port:** `streamlit run app.py --server.port 8502`
-- **Docker:** `docker run -p 8502:8501 data-mining-app`
-
-### Out of memory errors
-- Large datasets may require more RAM
-- Try reducing dataset size or using Docker with increased memory allocation
-
-### Visualizations not appearing
-- Ensure Plotly is installed: `pip install plotly`
-- Clear browser cache and refresh
+| Problem | Fix |
+| --- | --- |
+| App won't start (Docker) | Ensure Docker Desktop is running, then rebuild: `docker build -t data-mining-app .` |
+| App won't start (Python) | Verify `python --version` is 3.9+ and re-run `pip install -r requirements.txt`. |
+| Port already in use | Run on another port: `streamlit run app.py --server.port 8502` or `docker run -p 8502:8501 data-mining-app`. |
+| Out-of-memory on large files | Use a smaller dataset or give the container more memory. |
+| Visualizations missing | Confirm Plotly is installed (`pip install plotly`) and hard-refresh the browser. |
 
 ---
 
-## 📝 License
+## 📄 License
 
-This project is developed for academic purposes as part of a Data Mining course.
+Released under the [MIT License](LICENSE).
 
----
+## 👤 Author
 
-## 👨‍💻 Author
+**Ramy** · [@RamyRxr](https://github.com/RamyRxr)
 
-**Ramy**  
-Data Mining Course Project  
-Version 3.0  
-December 2025
-
----
-
-## 🙏 Acknowledgments
-
-- Course instructors for providing detailed algorithm specifications
-- Academic material that guided the implementation
-- Streamlit community for excellent documentation
-
----
-
-## 📧 Support
-
-For issues or questions about the application:
-1. Check the troubleshooting section above
-2. Review the detailed task plan in `data_mining_project_tasks.md`
-3. Verify your setup matches the prerequisites
-
----
-
-**✨ Enjoy exploring your data with rigorous, academically-compliant algorithms!**
-
-
+If you found this useful, a ⭐ on the repo is appreciated.
